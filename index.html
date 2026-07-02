@@ -8,179 +8,115 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0d0f16;
-    --panel:#161925;
-    --panel2:#1d2232;
-    --line:#2b3145;
-    --gold:#e8b04b;
-    --gold-dim:#8a6a2c;
-    --teal:#49d7c2;
+    --bg:#f4f5f9;
+    --panel:#ffffff;
+    --line:#e3e6ef;
+    --text:#181b27;
+    --text-dim:#6b7280;
+    --blue:#2f6fed;
+    --blue-dark:#1d54c9;
+    --blue-soft:#e7effe;
+    --amber:#f2a93b;
+    --teal:#0eae94;
     --red:#e5534b;
-    --text:#eef0f6;
-    --text-dim:#8b91a7;
-    --given:#c7cbdb;
+    --given:#20232f;
+    --highlight:#fff1a6;
+    --cell-font:20px;
   }
   *{box-sizing:border-box;}
   body{
-    margin:0;
-    background:
-      radial-gradient(circle at 15% 0%, rgba(232,176,75,0.08), transparent 40%),
-      radial-gradient(circle at 85% 100%, rgba(73,215,194,0.06), transparent 45%),
-      var(--bg);
-    color:var(--text);
-    font-family:'Inter',sans-serif;
-    min-height:100vh;
-    -webkit-tap-highlight-color: transparent;
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:'Inter',sans-serif;min-height:100vh;
+    -webkit-tap-highlight-color:transparent;
   }
   .wrap{max-width:520px;margin:0 auto;padding:18px 16px 60px;}
-  header.top{
-    display:flex;align-items:baseline;justify-content:space-between;
-    margin-bottom:18px;
-  }
-  header.top .brand{
-    font-family:'JetBrains Mono',monospace;
-    font-weight:800;font-size:20px;letter-spacing:1px;
-    color:var(--text);
-  }
-  header.top .brand span{color:var(--gold);}
+  header.top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px;}
+  header.top .brand{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:20px;letter-spacing:1px;color:var(--text);}
+  header.top .brand span{color:var(--blue);}
   .eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;}
 
-  .card{
-    background:linear-gradient(180deg,var(--panel),var(--panel2));
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:16px;
-    margin-bottom:16px;
-  }
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 1px 2px rgba(20,25,40,0.04);}
   .card h2{margin:0 0 12px;font-size:15px;letter-spacing:.3px;color:var(--text);}
   label{display:block;font-size:12px;color:var(--text-dim);margin:10px 0 4px;}
-  input[type=text]{
-    width:100%;padding:10px 12px;background:#0c0e16;border:1px solid var(--line);
-    border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;
-  }
-  input[type=range]{width:100%;accent-color:var(--gold);}
+  input[type=text]{width:100%;padding:10px 12px;background:#fbfbfe;border:1px solid var(--line);border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;}
+  input[type=range]{width:100%;accent-color:var(--blue);}
   .row{display:flex;gap:8px;}
   .row > *{flex:1;}
-  .sliderval{font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:700;float:right;}
+  .sliderval{font-family:'JetBrains Mono',monospace;color:var(--blue);font-weight:700;float:right;}
 
-  button{
-    font-family:'Inter',sans-serif;font-weight:600;font-size:14px;
-    border:none;border-radius:9px;padding:11px 14px;cursor:pointer;
-    transition:transform .08s ease, opacity .15s ease;
-  }
+  button{font-family:'Inter',sans-serif;font-weight:600;font-size:14px;border:none;border-radius:9px;padding:11px 14px;cursor:pointer;transition:transform .08s ease, opacity .15s ease;}
   button:active{transform:scale(0.97);}
-  .btn-primary{background:var(--gold);color:#1a1200;width:100%;margin-top:12px;}
-  .btn-secondary{background:#242a3d;color:var(--text);border:1px solid var(--line);}
+  .btn-primary{background:var(--blue);color:#fff;width:100%;margin-top:12px;}
+  .btn-secondary{background:#eef1f8;color:var(--text);border:1px solid var(--line);}
   .btn-danger{background:var(--red);color:#fff;}
   .btn-ghost{background:transparent;color:var(--text-dim);border:1px solid var(--line);}
   .btn-small{padding:8px 10px;font-size:12px;}
   button:disabled{opacity:.4;cursor:not-allowed;}
 
-  /* KODE DISPLAY (vault/keypad look) */
-  .code-display{
-    display:flex;justify-content:center;gap:4px;margin:14px 0 8px;flex-wrap:wrap;
-  }
-  .code-display .seg{
-    font-family:'JetBrains Mono',monospace;
-    font-weight:700;font-size:20px;
-    background:#0a0c13;border:1px solid var(--line);
-    color:var(--teal);
-    padding:8px 0;width:26px;text-align:center;border-radius:4px;
-    box-shadow:inset 0 0 6px rgba(73,215,194,0.15);
-  }
-  .code-display .seg.meta{color:var(--gold);box-shadow:inset 0 0 6px rgba(232,176,75,0.18);}
+  .code-display{display:flex;justify-content:center;gap:4px;margin:14px 0 8px;flex-wrap:wrap;}
+  .code-display .seg{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:19px;background:var(--blue-soft);border:1px solid var(--line);color:var(--blue-dark);padding:8px 0;width:26px;text-align:center;border-radius:5px;}
+  .code-display .seg.meta{color:var(--amber);background:#fff6e6;}
   .code-hint{font-size:11px;color:var(--text-dim);text-align:center;margin-bottom:10px;}
-
   .copyrow{display:flex;gap:8px;}
 
-  /* LEADERBOARD */
-  .lb-scroll{max-height:260px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;}
+  .otp-row{display:flex;justify-content:center;gap:4px;margin:6px 0 10px;flex-wrap:wrap;}
+  .otp-box{width:24px;height:34px;text-align:center;padding:0;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:16px;border:1px solid var(--line);border-radius:5px;background:#fbfbfe;color:var(--blue-dark);text-transform:uppercase;}
+  .otp-box.meta{color:var(--amber);}
+  .otp-box:focus{outline:2px solid var(--blue);}
+
+  .lb-scroll{max-height:280px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;}
   table{width:100%;border-collapse:collapse;font-size:12.5px;}
-  thead th{
-    position:sticky;top:0;background:#11141e;color:var(--text-dim);
-    text-align:left;padding:8px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;font-size:10.5px;
-    border-bottom:1px solid var(--line);
-  }
-  tbody td{padding:7px 8px;border-bottom:1px solid #1f2434;color:var(--text);}
+  thead th{position:sticky;top:0;background:#f7f8fc;color:var(--text-dim);text-align:left;padding:8px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;font-size:10.5px;border-bottom:1px solid var(--line);}
+  tbody td{padding:7px 8px;border-bottom:1px solid #eef0f6;color:var(--text);}
   tbody tr:last-child td{border-bottom:none;}
   .res-Menang{color:var(--teal);font-weight:700;}
   .res-Kalah{color:var(--red);font-weight:700;}
-  .res-Seri{color:var(--gold);font-weight:700;}
+  .res-Seri{color:var(--amber);font-weight:700;}
   .empty-lb{padding:16px;text-align:center;color:var(--text-dim);font-size:12px;}
+  .lb-refresh-note{font-size:10.5px;color:var(--text-dim);text-align:right;margin-top:6px;}
 
-  /* GAME SCREEN */
   #gameScreen{display:none;}
-  .gamebar{
-    display:flex;align-items:center;justify-content:space-between;
-    background:var(--panel);border:1px solid var(--line);border-radius:12px;
-    padding:10px 12px;margin-bottom:12px;gap:8px;
-  }
+  .gamebar{display:flex;align-items:center;justify-content:space-between;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;gap:8px;}
   .stat{text-align:center;flex:1;}
   .stat .v{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:17px;}
   .stat .l{font-size:9.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;}
   #timerVal.warn{color:var(--red);}
   #mistakeVal.warn{color:var(--red);}
 
-  .opponent-line{
-    font-size:12px;color:var(--text-dim);text-align:center;margin-bottom:10px;
-  }
+  .opponent-line{font-size:12px;color:var(--text-dim);text-align:center;margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;}
   .opponent-line b{color:var(--text);}
+  .refresh-btn{background:none;border:1px solid var(--line);border-radius:6px;padding:2px 7px;font-size:11px;color:var(--blue);}
+  .sync-note{font-size:10px;color:var(--text-dim);text-align:center;margin-bottom:10px;}
 
-  .grid-outer{
-    border:3px solid var(--gold);
-    border-radius:8px;
-    display:grid;
-    grid-template-columns:repeat(9,1fr);
-    aspect-ratio:1/1;
-    background:#0a0c13;
-    overflow:hidden;
-  }
-  .cell{
-    display:flex;align-items:center;justify-content:center;
-    font-family:'JetBrains Mono',monospace;font-size:clamp(14px,4.2vw,20px);font-weight:600;
-    color:var(--teal);
-    border-right:1px solid #262c3f;
-    border-bottom:1px solid #262c3f;
-    cursor:pointer;
-    user-select:none;
-    background:#12151f;
-  }
-  .cell.given{color:var(--given);font-weight:700;cursor:default;background:#171b28;}
-  .cell.br{border-right:2.5px solid var(--gold-dim);}
-  .cell.bb{border-bottom:2.5px solid var(--gold-dim);}
-  .cell.selected{background:#2a3350;}
-  .cell.wrong{background:rgba(229,83,75,0.35);color:var(--red);}
-  .cell.hinted{color:var(--gold);}
+  .fontctrl{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;}
+  .fontctrl button{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:6px 12px;font-family:'JetBrains Mono',monospace;font-weight:800;}
+  .fontctrl .fs-label{font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;}
 
-  .numpad{
-    display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px;
-  }
-  .numpad button{
-    background:#1d2232;color:var(--text);border:1px solid var(--line);
-    font-family:'JetBrains Mono',monospace;font-size:17px;padding:12px 0;
-  }
-  .numpad button.tipbtn{
-    grid-column:span 5;background:var(--gold);color:#1a1200;font-family:'Inter',sans-serif;
-    font-weight:700;margin-top:2px;
-  }
-  .numpad button:active{background:#2a3350;}
+  .grid-outer{border:3px solid var(--blue);border-radius:8px;display:grid;grid-template-columns:repeat(9,1fr);aspect-ratio:1/1;background:#fff;overflow:hidden;}
+  .cell{display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:var(--cell-font);font-weight:600;color:var(--teal);border-right:1px solid #e7e9f2;border-bottom:1px solid #e7e9f2;cursor:pointer;user-select:none;background:#ffffff;}
+  .cell.given{color:var(--given);font-weight:800;background:#fafbff;}
+  .cell.br{border-right:2.5px solid #a9c1f2;}
+  .cell.bb{border-bottom:2.5px solid #a9c1f2;}
+  .cell.selected{background:var(--blue-soft);}
+  .cell.wrong{background:rgba(229,83,75,0.25);color:var(--red);}
+  .cell.hinted{color:var(--amber);}
+  .cell.samenum{background:var(--highlight);}
 
-  /* MODALS */
-  .overlay{
-    position:fixed;inset:0;background:rgba(6,7,12,0.72);
-    display:none;align-items:center;justify-content:center;z-index:50;padding:20px;
-  }
+  .numpad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px;}
+  .numpad button{background:var(--blue);color:#fff;border:none;font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;padding:16px 0;border-radius:12px;}
+  .numpad button#clearNumBtn{background:#e5e8f2;color:var(--text);}
+  .numpad button.tipbtn{grid-column:span 5;background:var(--amber);color:#241a00;font-family:'Inter',sans-serif;font-weight:800;font-size:15px;margin-top:2px;padding:13px 0;}
+  .numpad button:active{filter:brightness(0.9);}
+
+  .overlay{position:fixed;inset:0;background:rgba(20,24,38,0.45);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
   .overlay.show{display:flex;}
-  .modal{
-    background:var(--panel2);border:1px solid var(--line);border-radius:14px;
-    padding:22px;max-width:340px;width:100%;text-align:center;
-  }
+  .modal{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;max-width:340px;width:100%;text-align:center;box-shadow:0 10px 30px rgba(20,25,40,0.15);}
   .modal h3{margin:0 0 8px;font-size:19px;}
   .modal p{color:var(--text-dim);font-size:13.5px;margin:0 0 18px;}
   .modal .actions{display:flex;gap:10px;}
   .result-Menang h3{color:var(--teal);}
   .result-Kalah h3{color:var(--red);}
-  .result-Seri h3{color:var(--gold);}
+  .result-Seri h3{color:var(--amber);}
 
   .toplink{font-size:11px;color:var(--text-dim);text-align:center;margin-top:18px;}
 </style>
@@ -217,7 +153,7 @@
 
       <div id="genCodeResult" style="display:none;">
         <div class="code-display" id="codeSegments"></div>
-        <div class="code-hint">6 digit acak + 2 digit sel-terbuka + 2 digit kesalahan + 2 digit tips</div>
+        <div class="code-hint">6 digit acak + 2 digit sel-terbuka + 2 digit kesalahan + 2 digit tips = 12 digit</div>
         <div class="copyrow">
           <button class="btn-secondary" id="copyCodeBtn" style="flex:1;">Salin Kode</button>
           <button class="btn-primary" id="startAsABtn" style="flex:1;margin-top:0;">Mulai Main</button>
@@ -226,14 +162,12 @@
     </div>
 
     <div class="card">
-      <h2>3 · Gabung Pakai Kode Teman</h2>
-      <label>Tempel kode 12 digit dari teman Anda</label>
-      <div class="row">
-        <input type="text" id="joinCodeInput" placeholder="Contoh: AB9AAA700903" maxlength="12" style="text-transform:uppercase;">
-        <button class="btn-secondary btn-small" id="pasteBtn" style="flex:0 0 auto;">Tempel</button>
-      </div>
+      <h2>3 · Gabung Pakai Kode Teman (12 digit)</h2>
+      <label style="text-align:center;">Ketik atau tempel kode 12 digit dari teman Anda</label>
+      <div class="otp-row" id="otpRow"></div>
+      <button class="btn-secondary" id="pasteBtn" style="width:100%;">Tempel dari Clipboard</button>
       <button class="btn-primary" id="joinBtn">Gabung & Mulai</button>
-      <div id="joinError" style="color:var(--red);font-size:12px;margin-top:8px;"></div>
+      <div id="joinError" style="color:var(--red);font-size:12px;margin-top:8px;text-align:center;"></div>
     </div>
 
     <div class="card">
@@ -244,9 +178,10 @@
           <tbody id="lbBody"><tr><td colspan="4" class="empty-lb">Memuat…</td></tr></tbody>
         </table>
       </div>
+      <div class="lb-refresh-note" id="lbRefreshNote"></div>
     </div>
 
-    <div class="toplink">Data skor disimpan otomatis ke Google Sheet melalui Apps Script.</div>
+    <div class="toplink">Skor diambil langsung dari Google Sheet (CSV publik), diperbarui otomatis.</div>
   </div>
 
   <!-- ===================== GAME ===================== -->
@@ -256,7 +191,17 @@
       <div class="stat"><div class="v" id="mistakeVal">0/10</div><div class="l">Kesalahan</div></div>
       <div class="stat"><div class="v" id="hintVal">3</div><div class="l">Tips</div></div>
     </div>
-    <div class="opponent-line">Lawan: <b id="opponentName">—</b> · kesalahan lawan: <span id="opponentMistakes">0</span></div>
+    <div class="opponent-line">
+      Lawan: <b id="opponentName">—</b> · kesalahan lawan: <span id="opponentMistakes">0</span>
+      <button class="refresh-btn" id="manualRefreshBtn" title="Cek status lawan sekarang">🔄</button>
+    </div>
+    <div class="sync-note" id="syncNote">Menyinkronkan…</div>
+
+    <div class="fontctrl">
+      <button id="fontMinus">A−</button>
+      <span class="fs-label" id="fontSizeLabel">20px</span>
+      <button id="fontPlus">A+</button>
+    </div>
 
     <div class="grid-outer" id="grid"></div>
 
@@ -287,7 +232,7 @@
     <h3 id="resultTitle">—</h3>
     <p id="resultDesc">—</p>
     <div class="actions">
-      <button class="btn-primary" id="resultBackBtn" style="flex:1;margin-top:0;">Kembali ke Beranda</button>
+      <button class="btn-primary" id="resultBackBtn" style="flex:1;margin-top:0;">Main Lagi</button>
     </div>
   </div>
 </div>
@@ -296,10 +241,16 @@
 /* ============================================================
    KONFIGURASI
    ============================================================ */
-const APP_URL = "https://script.google.com/macros/s/AKfycbwPzGDGLJYS1lD8CDcaiy8IkxLeGA_xsPrUhn7CO88k6Xxm_y7HcX3HmQsyHFXAXPiX/exec";
+const APP_URL = "https://script.google.com/macros/s/AKfycbzpVgw2hJiAqfpBJMhehelYqgLLCo4-RDk1QL9MpjNIMyXOtCCYHiGZDhAl_7m5SYe8/exec";
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNDewaXc-SAqAmkU7x8UNoAqWNYJV_qH4gmIu_CrTwrLMjUMhmDOzmRPn-5zYsVwl4TtMoW6Bwvi7P/pub?output=csv";
 const SEED_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const GAME_MINUTES = 20;
-const POLL_MS = 4000;
+const POLL_MS = 3000;
+
+/* ID unik per perangkat/tab — dipakai backend untuk membedakan pemain A vs B,
+   supaya TIDAK bergantung pada nama (mencegah bug saat dua HP pakai nama sama). */
+function genDeviceId(){ return 'd' + Math.random().toString(36).slice(2) + Date.now().toString(36); }
+const DEVICE_ID = genDeviceId();
 
 /* ============================================================
    PRNG DETERMINISTIK DARI SEED STRING
@@ -411,9 +362,106 @@ async function api(action, params){
 }
 
 /* ============================================================
+   CSV LEADERBOARD (dibaca langsung dari Google Sheet publik)
+   ============================================================ */
+function parseCSV(text){
+  const rows=[]; let row=[]; let field=''; let inQuotes=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(inQuotes){
+      if(c==='"'){ if(text[i+1]==='"'){ field+='"'; i++; } else { inQuotes=false; } }
+      else field+=c;
+    } else {
+      if(c==='"') inQuotes=true;
+      else if(c===','){ row.push(field); field=''; }
+      else if(c==='\n' || c==='\r'){
+        if(c==='\r' && text[i+1]==='\n') i++;
+        row.push(field); field=''; rows.push(row); row=[];
+      } else field+=c;
+    }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r => r.length>1 || (r.length===1 && r[0]!==''));
+}
+async function loadLeaderboard(){
+  const body = document.getElementById('lbBody');
+  const note = document.getElementById('lbRefreshNote');
+  try{
+    const sep = CSV_URL.includes('?') ? '&' : '?';
+    const res = await fetch(CSV_URL + sep + 'cb=' + Date.now());
+    const text = await res.text();
+    const rows = parseCSV(text);
+    if(rows.length <= 1){
+      body.innerHTML = '<tr><td colspan="4" class="empty-lb">Belum ada skor tercatat.</td></tr>';
+      return;
+    }
+    const header = rows[0].map(h => (h||'').trim().toLowerCase());
+    const iName = header.indexOf('nama');
+    const iCode = header.indexOf('kode');
+    const iHasil = header.indexOf('hasil');
+    const iMenit = header.indexOf('menit');
+    const data = rows.slice(1).filter(r => r.length > 1 && r[iName]).reverse().slice(0,150);
+    if(data.length === 0){
+      body.innerHTML = '<tr><td colspan="4" class="empty-lb">Belum ada skor tercatat.</td></tr>';
+      return;
+    }
+    body.innerHTML = data.map(r=>{
+      const name = r[iName]||'', code = r[iCode]||'', hasil = (r[iHasil]||'').trim(), menit = r[iMenit]||'';
+      return `<tr><td>${escapeHtml(name)}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${escapeHtml(code)}</td><td class="res-${escapeHtml(hasil)}">${escapeHtml(hasil)}</td><td>${escapeHtml(menit)}</td></tr>`;
+    }).join("");
+    note.textContent = "Diperbarui " + new Date().toLocaleTimeString('id-ID');
+  }catch(e){
+    body.innerHTML = '<tr><td colspan="4" class="empty-lb">Gagal memuat skor. Pastikan link CSV sudah dipublish (File → Share → Publish to web) dari sheet Leaderboard.</td></tr>';
+  }
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+loadLeaderboard();
+setInterval(()=>{ if(document.getElementById('lobbyScreen').style.display !== 'none') loadLeaderboard(); }, 10000);
+
+/* ============================================================
+   OTP INPUT KODE 12 DIGIT (join)
+   ============================================================ */
+function buildOtpBoxes(){
+  const row = document.getElementById('otpRow');
+  row.innerHTML = '';
+  for(let i=0;i<12;i++){
+    const inp = document.createElement('input');
+    inp.type='text'; inp.maxLength=1;
+    inp.className = 'otp-box' + (i>=6 ? ' meta' : '');
+    inp.addEventListener('input', (e)=>{
+      e.target.value = e.target.value.toUpperCase().replace(/[^0-9A-Z]/g,'').slice(-1);
+      if(e.target.value && i<11) row.children[i+1].focus();
+    });
+    inp.addEventListener('keydown', (e)=>{
+      if(e.key==='Backspace' && !e.target.value && i>0) row.children[i-1].focus();
+    });
+    inp.addEventListener('paste', (e)=>{
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData).getData('text');
+      fillOtp(text);
+    });
+    row.appendChild(inp);
+  }
+}
+function fillOtp(text){
+  const row = document.getElementById('otpRow');
+  const chars = (text||'').trim().toUpperCase().replace(/[^0-9A-Z]/g,'').slice(0,12).split('');
+  Array.from(row.children).forEach(el => el.value = '');
+  chars.forEach((ch,i)=>{ if(row.children[i]) row.children[i].value = ch; });
+  if(chars.length) row.children[Math.min(chars.length,12)-1].focus();
+}
+function getJoinCode(){
+  const row = document.getElementById('otpRow');
+  return Array.from(row.children).map(inp => inp.value || '').join('');
+}
+buildOtpBoxes();
+
+/* ============================================================
    STATE
    ============================================================ */
-let state = null; // isi saat game berjalan
+let state = null;
 
 /* ============================================================
    LOBBY: SLIDERS
@@ -468,9 +516,9 @@ function flashBtn(id,label){
 document.getElementById('pasteBtn').onclick = async ()=>{
   try{
     const txt = await navigator.clipboard.readText();
-    document.getElementById('joinCodeInput').value = txt.trim().toUpperCase();
+    fillOtp(txt);
   }catch(e){
-    document.getElementById('joinCodeInput').focus();
+    document.getElementById('otpRow').children[0].focus();
   }
 };
 
@@ -483,33 +531,14 @@ document.getElementById('startAsABtn').onclick = ()=>{
 
 document.getElementById('joinBtn').onclick = ()=>{
   const name = document.getElementById('playerName').value.trim();
-  const codeRaw = document.getElementById('joinCodeInput').value;
+  const codeRaw = getJoinCode();
   const errBox = document.getElementById('joinError');
   errBox.textContent = "";
   if(!name){ errBox.textContent = "Isi nama Anda terlebih dahulu."; return; }
   const parsed = parseCode(codeRaw);
-  if(!parsed){ errBox.textContent = "Kode tidak valid. Harus 12 karakter."; return; }
+  if(!parsed){ errBox.textContent = "Kode belum lengkap. Harus 12 digit."; return; }
   enterGame(parsed.code, name);
 };
-
-/* ============================================================
-   LEADERBOARD
-   ============================================================ */
-async function loadLeaderboard(){
-  const res = await api('leaderboard');
-  const body = document.getElementById('lbBody');
-  if(!res || res.error || !res.rows || res.rows.length===0){
-    body.innerHTML = '<tr><td colspan="4" class="empty-lb">Belum ada skor tercatat.</td></tr>';
-    return;
-  }
-  body.innerHTML = res.rows.map(r=>{
-    return `<tr><td>${escapeHtml(r.name)}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${escapeHtml(r.code)}</td><td class="res-${escapeHtml(r.result)}">${escapeHtml(r.result)}</td><td>${escapeHtml(String(r.minute))}</td></tr>`;
-  }).join("");
-}
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-loadLeaderboard();
 
 /* ============================================================
    MASUK KE GAME
@@ -518,8 +547,8 @@ async function enterGame(code, name){
   const parsed = parseCode(code);
   if(!parsed){ alert('Kode tidak valid.'); return; }
 
-  const joinRes = await api('join', {code: parsed.code, name});
-  if(!joinRes || joinRes.error){ alert('Gagal terhubung ke server skor. Cek koneksi internet.'); return; }
+  const joinRes = await api('join', {code: parsed.code, name, deviceId: DEVICE_ID});
+  if(!joinRes || joinRes.error){ alert('Gagal terhubung ke server skor. Cek koneksi internet / URL Apps Script.'); return; }
 
   const {solution, givenSet} = buildPuzzle(parsed.seed, parsed.reveal);
   const entries = Array(81).fill(0);
@@ -546,11 +575,25 @@ async function enterGame(code, name){
   document.getElementById('mistakeVal').textContent = `0/${state.maxMistake}`;
   document.getElementById('hintVal').textContent = state.hintsLeft;
 
+  cellFontSize = window.innerWidth < 380 ? 16 : 20;
+  applyFontSize();
+
   buildGrid();
   startTimer();
   state.pollTimer = setInterval(pollOpponent, POLL_MS);
   pollOpponent();
 }
+
+/* ============================================================
+   UKURAN FONT GRID (A+ / A-)
+   ============================================================ */
+let cellFontSize = 20;
+function applyFontSize(){
+  document.documentElement.style.setProperty('--cell-font', cellFontSize + 'px');
+  document.getElementById('fontSizeLabel').textContent = cellFontSize + 'px';
+}
+document.getElementById('fontPlus').onclick = ()=>{ cellFontSize = Math.min(34, cellFontSize+2); applyFontSize(); };
+document.getElementById('fontMinus').onclick = ()=>{ cellFontSize = Math.max(12, cellFontSize-2); applyFontSize(); };
 
 /* ============================================================
    GRID
@@ -565,21 +608,35 @@ function buildGrid(){
       cell.className = 'cell';
       if(c===2||c===5) cell.classList.add('br');
       if(r===2||r===5) cell.classList.add('bb');
+      cell.dataset.i = i;
       if(state.locked[i]){
         cell.classList.add('given');
         cell.textContent = state.entries[i];
+        cell.onclick = ()=> highlightSame(state.entries[i]);
       } else {
         cell.textContent = '';
         cell.onclick = ()=> selectCell(i);
       }
-      cell.dataset.i = i;
       grid.appendChild(cell);
     }
   }
 }
+function clearHighlights(){
+  document.querySelectorAll('.cell.samenum').forEach(el=>el.classList.remove('samenum'));
+}
+function highlightSame(n){
+  clearHighlights();
+  document.querySelectorAll('.cell').forEach(el=>el.classList.remove('selected'));
+  if(!n) return;
+  document.querySelectorAll('.cell').forEach(el=>{
+    const i = parseInt(el.dataset.i,10);
+    if(state.entries[i]===n) el.classList.add('samenum');
+  });
+}
 function selectCell(i){
   if(state.finished) return;
   if(state.locked[i]) return;
+  clearHighlights();
   state.selected = i;
   document.querySelectorAll('.cell').forEach(el=>el.classList.remove('selected'));
   document.querySelector(`.cell[data-i="${i}"]`).classList.add('selected');
@@ -600,18 +657,19 @@ document.getElementById('hintBtn').onclick = ()=>{
 
 function placeNumber(i, n){
   const cellEl = document.querySelector(`.cell[data-i="${i}"]`);
-  if(state.entries[i] !== 0 && state.locked[i]) return;
   if(n === state.solution[i]){
     state.entries[i] = n;
     state.locked[i] = true;
     cellEl.textContent = n;
     cellEl.classList.add('given');
     cellEl.classList.remove('selected','wrong');
+    cellEl.onclick = ()=> highlightSame(state.entries[i]);
+    highlightSame(n);
     checkWin();
   } else {
     state.mistakes++;
     document.getElementById('mistakeVal').textContent = `${state.mistakes}/${state.maxMistake}`;
-    if(state.mistakes > Math.floor(state.maxMistake*0.7)) document.getElementById('mistakeVal').classList.add('warn');
+    if(state.maxMistake>0 && state.mistakes > Math.floor(state.maxMistake*0.7)) document.getElementById('mistakeVal').classList.add('warn');
     cellEl.textContent = n;
     cellEl.classList.add('wrong');
     setTimeout(()=>{ cellEl.textContent=''; cellEl.classList.remove('wrong'); }, 500);
@@ -635,6 +693,7 @@ function useHint(){
   const cellEl = document.querySelector(`.cell[data-i="${i}"]`);
   cellEl.textContent = state.solution[i];
   cellEl.classList.add('given','hinted');
+  cellEl.onclick = ()=> highlightSame(state.entries[i]);
   checkWin();
 }
 
@@ -671,14 +730,19 @@ function elapsedMinutes(){
    ============================================================ */
 async function pollOpponent(){
   if(!state || state.finished) return;
+  document.getElementById('syncNote').textContent = "Menyinkronkan…";
   const res = await api('status', {code: state.code});
-  if(!res || res.error) return;
+  if(!res || res.error){
+    document.getElementById('syncNote').textContent = "Gagal sinkron — cek koneksi.";
+    return;
+  }
+  document.getElementById('syncNote').textContent = "Tersinkron " + new Date().toLocaleTimeString('id-ID');
   document.getElementById('opponentName').textContent =
     state.slot==='A' ? (res.playerB || '(menunggu)') : (res.playerA || '(menunggu)');
   const oppMistakes = state.slot==='A' ? res.mistakesB : res.mistakesA;
   document.getElementById('opponentMistakes').textContent = oppMistakes || 0;
 
-  const oppStatus = state.slot==='A' ? res.statusB : res.statusA;
+  const oppStatus = (state.slot==='A' ? res.statusB : res.statusA || '').toString().trim();
   if(state.finished) return;
   if(oppStatus === 'Kalah'){
     endGame('Menang', 'Lawan Anda kalah / menyerah.');
@@ -688,6 +752,10 @@ async function pollOpponent(){
     endGame('Seri', 'Waktu 20 menit habis.');
   }
 }
+document.getElementById('manualRefreshBtn').onclick = pollOpponent;
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState === 'visible' && state && !state.finished) pollOpponent();
+});
 
 /* ============================================================
    AKHIR PERMAINAN
@@ -700,7 +768,8 @@ function endGame(result, desc){
   document.getElementById('surrenderBtn').style.display = 'none';
 
   const minute = elapsedMinutes();
-  api('finish', {code: state.code, slot: state.slot, name: state.name, result, minute});
+  api('finish', {code: state.code, slot: state.slot, name: state.name, result, minute})
+    .then(()=> setTimeout(loadLeaderboard, 1500));
 
   const overlay = document.getElementById('resultOverlay');
   const modal = document.getElementById('resultModal');
@@ -719,7 +788,7 @@ document.getElementById('resultBackBtn').onclick = ()=>{
   document.getElementById('mistakeVal').classList.remove('warn');
   generatedCode = null;
   document.getElementById('genCodeResult').style.display = 'none';
-  document.getElementById('joinCodeInput').value = '';
+  buildOtpBoxes();
   loadLeaderboard();
 };
 
