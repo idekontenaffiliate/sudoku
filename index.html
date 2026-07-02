@@ -1,267 +1,316 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="nebula">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sudoku Duel — Tanding 2 Pemain</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sudoku Duel — Kode Sinkron 2 HP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#161826;
-    --bg-2:#1D2033;
-    --panel:#242739;
-    --panel-2:#2B2F45;
-    --line:#3B3F5C;
-    --ink:#F1F0EC;
-    --muted:#9295B0;
-    --p1:#5EEAD4;
-    --p1-dim:#274944;
-    --p2:#F7B267;
-    --p2-dim:#4A3A22;
-    --danger:#F76E6E;
-    --success:#8FE388;
-    --radius:14px;
+  /* ============ THEME TOKENS ============ */
+  :root, [data-theme="nebula"]{
+    --bg:#161826; --panel:#242739; --panel-2:#2B2F45; --line:#3B3F5C;
+    --ink:#F1F0EC; --muted:#9295B0; --accent:#5EEAD4; --accent-2:#F7B267;
+    --danger:#F76E6E; --success:#8FE388; --mode:dark;
   }
+  [data-theme="crimson"]{
+    --bg:#1A1416; --panel:#241B1E; --panel-2:#2C2124; --line:#3D2B2E;
+    --ink:#F3E9E9; --muted:#A6898C; --accent:#E85D5D; --accent-2:#F2A65A;
+    --danger:#FF6B6B; --success:#8FE388; --mode:dark;
+  }
+  [data-theme="cyber"]{
+    --bg:#0D0F0C; --panel:#161A14; --panel-2:#1C2118; --line:#2B3324;
+    --ink:#E8F5E0; --muted:#8FA382; --accent:#C6FF6B; --accent-2:#5EEAD4;
+    --danger:#FF6B6B; --success:#C6FF6B; --mode:dark;
+  }
+  [data-theme="ocean"]{
+    --bg:#0E1A24; --panel:#152736; --panel-2:#1B3244; --line:#28425A;
+    --ink:#E7F1F7; --muted:#7FA0B5; --accent:#4FC3F7; --accent-2:#7C9EFF;
+    --danger:#FF7A7A; --success:#6FE3A6; --mode:dark;
+  }
+  [data-theme="violet"]{
+    --bg:#181428; --panel:#241E3B; --panel-2:#2C2447; --line:#3C2F5C;
+    --ink:#F1EDF9; --muted:#A594C4; --accent:#B389F9; --accent-2:#F2C14E;
+    --danger:#FF7A93; --success:#8FE388; --mode:dark;
+  }
+  [data-theme="paper"]{
+    --bg:#F6F4EF; --panel:#FFFFFF; --panel-2:#F1EDE3; --line:#E2DDD1;
+    --ink:#221F1A; --muted:#7A756A; --accent:#C0603D; --accent-2:#2F6F63;
+    --danger:#D0463A; --success:#3E8E5A; --mode:light;
+  }
+  [data-theme="mint"]{
+    --bg:#F1FBF6; --panel:#FFFFFF; --panel-2:#E7F7EF; --line:#D3ECE0;
+    --ink:#123024; --muted:#5E8877; --accent:#1FA383; --accent-2:#F2A65A;
+    --danger:#E4574B; --success:#1FA383; --mode:light;
+  }
+  [data-theme="sunset"]{
+    --bg:#FFF4EC; --panel:#FFFFFF; --panel-2:#FCE8DA; --line:#F4D9C6;
+    --ink:#3A2318; --muted:#93725F; --accent:#F0723A; --accent-2:#3E7CB1;
+    --danger:#E14B3B; --success:#3E9C6B; --mode:light;
+  }
+  [data-theme="sky"]{
+    --bg:#F0F6FC; --panel:#FFFFFF; --panel-2:#E3EEF9; --line:#D6E4F0;
+    --ink:#132437; --muted:#5E7A93; --accent:#2E86DE; --accent-2:#F2A65A;
+    --danger:#E4574B; --success:#28A17A; --mode:light;
+  }
+  [data-theme="sand"]{
+    --bg:#F7F1E6; --panel:#FFFEFB; --panel-2:#EFE5D0; --line:#E6D9BE;
+    --ink:#2E2717; --muted:#8A7A5C; --accent:#B8863B; --accent-2:#5D7D5A;
+    --danger:#C0453A; --success:#5D7D5A; --mode:light;
+  }
+
   *{box-sizing:border-box;}
   body{
-    margin:0;
-    background:
-      radial-gradient(circle at 15% 0%, #23273f 0%, transparent 45%),
-      radial-gradient(circle at 85% 100%, #202a3a 0%, transparent 45%),
-      var(--bg);
-    color:var(--ink);
-    font-family:'Inter',sans-serif;
-    min-height:100vh;
-    padding:28px 18px 60px;
+    margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
+    font-family:'Inter',sans-serif; padding:20px 14px 50px; transition:background .2s,color .2s;
   }
   h1,h2,h3{font-family:'Space Grotesk',sans-serif; margin:0;}
-  .wrap{max-width:1180px; margin:0 auto;}
+  .wrap{max-width:480px; margin:0 auto;}
+  header{text-align:center; margin-bottom:16px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.16em; color:var(--muted); text-transform:uppercase;}
+  h1{font-size:26px; font-weight:700; margin-top:6px;}
+  h1 span{color:var(--accent);}
+  .sub{color:var(--muted); font-size:13px; margin-top:4px;}
 
-  /* ---------- HEADER ---------- */
-  header{text-align:center; margin-bottom:22px;}
-  .eyebrow{
-    display:inline-block; font-family:'JetBrains Mono',monospace; font-size:12px;
-    letter-spacing:.18em; color:var(--muted); text-transform:uppercase; margin-bottom:8px;
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:18px; margin-top:14px; box-shadow:0 10px 26px -16px rgba(0,0,0,.5);
   }
-  h1{font-size:clamp(28px,4.5vw,44px); font-weight:700; letter-spacing:-0.01em;}
-  h1 span{color:var(--p1);}
-  h1 em{color:var(--p2); font-style:normal;}
-  .sub{color:var(--muted); font-size:14px; margin-top:6px;}
-
-  /* ---------- CONTROLS ---------- */
-  .controls{
-    display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center;
-    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
-    padding:14px 16px; margin:22px 0; box-shadow:0 8px 24px -12px rgba(0,0,0,.5);
+  label{display:block; font-size:12px; color:var(--muted); margin:12px 0 6px; font-family:'JetBrains Mono',monospace;}
+  label:first-child{margin-top:0;}
+  input[type=text], input[type=url]{
+    width:100%; background:var(--panel-2); border:1px solid var(--line); color:var(--ink);
+    padding:11px 12px; border-radius:9px; font-family:'JetBrains Mono',monospace; font-size:15px; outline:none;
   }
-  .controls input[type=text], .controls input[type=url]{
-    background:var(--bg-2); border:1px solid var(--line); color:var(--ink);
-    padding:9px 12px; border-radius:8px; font-family:'Inter'; font-size:13px; outline:none;
-    transition:border-color .15s;
+  input:focus{border-color:var(--accent);}
+  select{
+    width:100%; background:var(--panel-2); border:1px solid var(--line); color:var(--ink);
+    padding:10px 12px; border-radius:9px; font-family:'Inter'; font-size:14px; outline:none;
   }
-  .controls input:focus{border-color:var(--p1);}
-  #appsScriptUrl{width:300px; max-width:46vw;}
+  .row{display:flex; gap:8px;}
+  .row > *{flex:1;}
   .btn{
-    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px;
-    border:none; border-radius:8px; padding:10px 18px; cursor:pointer;
-    transition:transform .12s ease, filter .12s ease;
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px; border:none;
+    border-radius:10px; padding:12px 16px; cursor:pointer; width:100%; margin-top:14px;
+    transition:transform .1s, filter .1s;
   }
-  .btn:active{transform:scale(.96);}
-  .btn-primary{background:linear-gradient(135deg,var(--p1),#3fc9b0); color:#0C1420;}
-  .btn-primary:hover{filter:brightness(1.08);}
+  .btn:active{transform:scale(.97);}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#10131F;}
+  .btn-primary:hover{filter:brightness(1.07);}
   .btn-ghost{background:transparent; color:var(--ink); border:1px solid var(--line);}
-  .btn-ghost:hover{border-color:var(--p2); color:var(--p2);}
-  .clue-badge{
-    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted);
-    border:1px dashed var(--line); border-radius:20px; padding:6px 12px;
-  }
-  .clue-badge b{color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--accent); color:var(--accent);}
+  .hint{font-size:11px; color:var(--muted); margin-top:6px; line-height:1.5;}
+  .error-msg{color:var(--danger); font-size:12px; margin-top:8px; min-height:14px; font-family:'JetBrains Mono',monospace;}
 
-  /* ---------- ARENA ---------- */
-  .arena{
-    display:grid; grid-template-columns: 1fr 74px 1fr; gap:14px; align-items:start;
+  /* ---------- waiting / countdown ---------- */
+  .waiting-box{text-align:center; padding:10px 0;}
+  .spinner{
+    width:38px; height:38px; margin:10px auto; border-radius:50%;
+    border:3px solid var(--line); border-top-color:var(--accent);
+    animation:spin 1s linear infinite;
   }
-  @media (max-width:880px){
-    .arena{grid-template-columns:1fr;}
-    .vs-col{flex-direction:row !important; height:auto !important; padding:10px 0 !important;}
-    .vs-bars{flex-direction:row !important; width:100% !important; height:10px !important;}
-    .vs-bar{height:10px !important; width:auto !important; flex:1;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .code-display{
+    font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700;
+    letter-spacing:.1em; color:var(--accent); margin:8px 0;
+  }
+  .countdown-num{
+    font-family:'Space Grotesk',sans-serif; font-size:64px; font-weight:700;
+    color:var(--accent-2); text-align:center; margin:10px 0;
   }
 
-  .panel{
-    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
-    padding:18px; position:relative; overflow:hidden;
-  }
-  .panel.p1{box-shadow: inset 3px 0 0 var(--p1);}
-  .panel.p2{box-shadow: inset 3px 0 0 var(--p2);}
-
-  .p-head{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap;}
-  .p-name-input{
-    background:var(--bg-2); border:1px solid var(--line); color:var(--ink);
-    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px;
-    padding:8px 10px; border-radius:8px; outline:none; width:150px;
-  }
-  .panel.p1 .p-name-input:focus{border-color:var(--p1);}
-  .panel.p2 .p-name-input:focus{border-color:var(--p2);}
-
-  .stat-row{display:flex; gap:8px; align-items:center;}
+  /* ---------- game ---------- */
+  .top-stats{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
   .timer{
-    font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700;
-    padding:6px 10px; border-radius:8px; background:var(--bg-2);
+    font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; color:var(--accent);
+    background:var(--panel-2); padding:6px 12px; border-radius:9px;
   }
-  .panel.p1 .timer{color:var(--p1);}
-  .panel.p2 .timer{color:var(--p2);}
   .mistakes{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted);}
   .mistakes b{color:var(--danger);}
+  .clue-tag{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); border:1px dashed var(--line); border-radius:14px; padding:4px 10px;}
 
-  /* board */
+  .board-wrap{position:relative;}
   .board{
-    display:grid; grid-template-columns:repeat(9,1fr);
-    aspect-ratio:1/1; width:100%; max-width:420px; margin:14px auto 12px;
-    background:var(--line); gap:1px; border:2px solid var(--line); border-radius:6px; overflow:hidden;
+    display:grid; grid-template-columns:repeat(9,1fr); aspect-ratio:1/1; width:100%;
+    background:var(--line); gap:1px; border:2px solid var(--line); border-radius:8px; overflow:hidden;
   }
   .cell{
-    background:var(--bg-2); display:flex; align-items:center; justify-content:center;
-    font-family:'JetBrains Mono',monospace; font-size:clamp(13px,2.6vw,19px); font-weight:500;
-    color:var(--ink); cursor:pointer; user-select:none; position:relative;
+    background:var(--panel-2); display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:19px; font-weight:500; color:var(--ink);
+    cursor:pointer; user-select:none; position:relative;
   }
-  .cell.given{color:var(--muted); font-weight:700; cursor:default; background:var(--panel-2);}
+  .cell.given{color:var(--muted); font-weight:700; background:var(--panel);}
   .cell.mistake{color:var(--danger);}
-  .panel.p1 .cell.selected{background:var(--p1-dim); outline:1px solid var(--p1);}
-  .panel.p2 .cell.selected{background:var(--p2-dim); outline:1px solid var(--p2);}
-  .panel.p1 .cell.peer{background:#1B2E2B;}
-  .panel.p2 .cell.peer{background:#2E2718;}
+  .cell.selected{background:color-mix(in srgb, var(--accent) 22%, var(--panel-2)); outline:1px solid var(--accent);}
+  .cell.peer{background:color-mix(in srgb, var(--accent) 8%, var(--panel-2));}
+  .cell.same-num{color:var(--accent); font-weight:800;}
   .cell.border-r{border-right:2px solid var(--line);}
   .cell.border-b{border-bottom:2px solid var(--line);}
+  .board-lock{
+    position:absolute; inset:0; background:color-mix(in srgb, var(--bg) 78%, transparent);
+    backdrop-filter:blur(2px); display:flex; align-items:center; justify-content:center;
+    border-radius:8px; font-family:'Space Grotesk',sans-serif; font-weight:700; color:var(--accent);
+    text-align:center; padding:10px;
+  }
 
-  /* number pad */
-  .pad{display:grid; grid-template-columns:repeat(10,1fr); gap:6px;}
+  .pad{display:grid; grid-template-columns:repeat(10,1fr); gap:6px; margin-top:12px;}
   .pad button{
-    background:var(--bg-2); border:1px solid var(--line); color:var(--ink);
+    background:var(--panel-2); border:1px solid var(--line); color:var(--ink);
     font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px;
-    border-radius:8px; padding:9px 0; cursor:pointer; transition:.12s;
+    border-radius:8px; padding:10px 0; cursor:pointer;
   }
-  .panel.p1 .pad button:hover{border-color:var(--p1); color:var(--p1);}
-  .panel.p2 .pad button:hover{border-color:var(--p2); color:var(--p2);}
-  .pad button.erase{grid-column:span 1; color:var(--danger); font-size:11px;}
+  .pad button:hover{border-color:var(--accent); color:var(--accent);}
+  .pad button.erase{color:var(--danger); font-size:12px;}
 
-  .status-line{
-    margin-top:12px; font-size:13px; color:var(--muted); min-height:18px;
-    font-family:'JetBrains Mono',monospace;
-  }
+  .status-line{margin-top:12px; font-size:13px; color:var(--muted); font-family:'JetBrains Mono',monospace; text-align:center;}
   .status-line.done{color:var(--success); font-weight:700;}
 
-  .submit-row{display:flex; gap:8px; margin-top:10px;}
-  .submit-row button{flex:1;}
-  .submit-row button:disabled{opacity:.35; cursor:not-allowed;}
+  /* ---------- result ---------- */
+  .result-row{
+    display:flex; justify-content:space-between; align-items:center; padding:10px 12px;
+    background:var(--panel-2); border-radius:10px; margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:13px;
+  }
+  .result-row.me{border:1px solid var(--accent);}
+  .winner-banner{
+    text-align:center; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:20px;
+    padding:14px; border-radius:12px; margin-top:10px;
+  }
+  .winner-banner.win{background:color-mix(in srgb, var(--success) 20%, var(--panel)); color:var(--success);}
+  .winner-banner.lose{background:color-mix(in srgb, var(--danger) 20%, var(--panel)); color:var(--danger);}
+  .winner-banner.draw{background:color-mix(in srgb, var(--accent-2) 20%, var(--panel)); color:var(--accent-2);}
 
-  /* VS divider */
-  .vs-col{
-    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
-    height:100%; padding-top:40px; gap:14px;
-  }
-  .vs-badge{
-    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px;
-    width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    background:linear-gradient(135deg,var(--p1),var(--p2)); color:#10131F;
-    box-shadow:0 6px 18px -6px rgba(0,0,0,.6);
-  }
-  .vs-bars{display:flex; flex-direction:column; gap:8px; width:10px; height:280px;}
-  .vs-bar{
-    flex:1; width:10px; background:var(--bg-2); border-radius:6px; position:relative; overflow:hidden;
-    border:1px solid var(--line);
-  }
-  .vs-bar-fill{
-    position:absolute; bottom:0; left:0; width:100%; height:0%; border-radius:6px;
-    transition:height .25s ease;
-  }
-  .vs-bar.p1 .vs-bar-fill{background:linear-gradient(180deg,var(--p1),#2c8f80);}
-  .vs-bar.p2 .vs-bar-fill{background:linear-gradient(180deg,var(--p2),#c2823f);}
-
-  footer{text-align:center; color:var(--muted); font-size:12px; margin-top:36px; font-family:'JetBrains Mono',monospace;}
-  footer a{color:var(--p1);}
+  .hidden{display:none !important;}
+  footer{text-align:center; color:var(--muted); font-size:11px; margin-top:26px; font-family:'JetBrains Mono',monospace;}
 </style>
 </head>
 <body>
 <div class="wrap">
-
   <header>
-    <span class="eyebrow">Papan · Waktu · Skor ke Spreadsheet</span>
-    <h1><span>SUDOKU</span> <em>DUEL</em></h1>
-    <p class="sub">Dua pemain, satu papan soal yang sama, siapa lebih cepat &amp; akurat.</p>
+    <span class="eyebrow">2 HP · 1 Kode · Sinkron Waktu Mulai</span>
+    <h1>SUDOKU <span>DUEL</span></h1>
+    <p class="sub">Masukkan kode yang sama di kedua HP, tekan Main di keduanya.</p>
   </header>
 
-  <div class="controls">
-    <input type="url" id="appsScriptUrl" placeholder="Tempel URL Web App Google Apps Script di sini">
-    <span class="clue-badge">Petunjuk awal: <b id="clueCountLabel">–</b> angka (rentang 17–30)</span>
-    <button class="btn btn-primary" id="newGameBtn">Soal Baru</button>
-  </div>
+  <!-- ===================== SETUP SCREEN ===================== -->
+  <section class="card" id="screen-setup">
+    <label for="themeSelect">Tema</label>
+    <select id="themeSelect">
+      <optgroup label="Gelap">
+        <option value="nebula">Nebula (Teal/Amber)</option>
+        <option value="crimson">Crimson Night</option>
+        <option value="cyber">Cyber Lime</option>
+        <option value="ocean">Deep Ocean</option>
+        <option value="violet">Royal Violet</option>
+      </optgroup>
+      <optgroup label="Terang">
+        <option value="paper">Paperwhite</option>
+        <option value="mint">Mint Fresh</option>
+        <option value="sunset">Sunset Light</option>
+        <option value="sky">Sky Light</option>
+        <option value="sand">Sand Dune</option>
+      </optgroup>
+    </select>
 
-  <div class="arena">
-    <!-- PLAYER 1 -->
-    <section class="panel p1" id="panel-1">
-      <div class="p-head">
-        <input class="p-name-input" id="name-1" value="Pemain 1" maxlength="18">
-        <div class="stat-row">
-          <span class="timer" id="timer-1">00:00</span>
-        </div>
-      </div>
-      <div class="mistakes">Kesalahan: <b id="mistakes-1">0</b></div>
-      <div class="board" id="board-1"></div>
-      <div class="pad" id="pad-1"></div>
-      <div class="status-line" id="status-1">Klik kotak kosong, lalu pilih angka.</div>
-      <div class="submit-row">
-        <button class="btn btn-primary" id="submit-1" disabled>Kirim Skor ke Sheet</button>
-      </div>
-    </section>
+    <label for="appsScriptUrl">URL Web App Google Apps Script</label>
+    <input type="url" id="appsScriptUrl" placeholder="https://script.google.com/macros/s/AKfycby0rqebMfEbbFNJde-PJiZQObgh_9h0F9c8Hxo0vJGBaI663Rndyqih7Lg3XScfBoFC/exec">
+    <p class="hint">URL ini dipakai untuk menyinkronkan waktu mulai kedua HP dan mencatat skor akhir. Lihat file AppsScript.gs untuk cara deploy.</p>
 
-    <!-- VS DIVIDER -->
-    <div class="vs-col">
-      <div class="vs-badge">VS</div>
-      <div class="vs-bars">
-        <div class="vs-bar p1"><div class="vs-bar-fill" id="bar-1"></div></div>
-        <div class="vs-bar p2"><div class="vs-bar-fill" id="bar-2"></div></div>
-      </div>
+    <label for="playerName">Nama Kamu</label>
+    <input type="text" id="playerName" placeholder="Nama kamu" maxlength="18" value="">
+
+    <label for="roomCode">Kode Permainan (8 karakter)</label>
+    <div class="row">
+      <input type="text" id="roomCode" placeholder="AB9AAA70" maxlength="8" style="text-transform:uppercase;">
     </div>
+    <p class="hint">Format: 6 karakter acak (0-9, A-Z) + 2 digit jumlah petunjuk awal 17–70. Contoh <b>AB9AAA70</b> = kode AB9AAA, dibuka 70 angka. <b>AAAAAA17</b> = kode AAAAAA, dibuka 17 angka (paling sulit). Kedua HP wajib memasukkan kode <b>persis sama</b>.</p>
+    <button class="btn btn-ghost" id="randomCodeBtn">🎲 Buatkan Kode Acak (untuk dibagikan ke lawan)</button>
 
-    <!-- PLAYER 2 -->
-    <section class="panel p2" id="panel-2">
-      <div class="p-head">
-        <input class="p-name-input" id="name-2" value="Pemain 2" maxlength="18">
-        <div class="stat-row">
-          <span class="timer" id="timer-2">00:00</span>
-        </div>
-      </div>
-      <div class="mistakes">Kesalahan: <b id="mistakes-2">0</b></div>
-      <div class="board" id="board-2"></div>
-      <div class="pad" id="pad-2"></div>
-      <div class="status-line" id="status-2">Klik kotak kosong, lalu pilih angka.</div>
-      <div class="submit-row">
-        <button class="btn btn-primary" id="submit-2" disabled>Kirim Skor ke Sheet</button>
-      </div>
-    </section>
-  </div>
+    <button class="btn btn-primary" id="playBtn">▶ Main</button>
+    <div class="error-msg" id="setupError"></div>
+  </section>
 
-  <footer>
-    Butuh Apps Script-nya? Lihat file <b>AppsScript.gs</b> yang disertakan — tempel ke Google Apps Script, deploy sebagai Web App, lalu tempel URL-nya di atas.
-  </footer>
+  <!-- ===================== WAITING SCREEN ===================== -->
+  <section class="card hidden" id="screen-waiting">
+    <div class="waiting-box">
+      <p class="sub">Kode Permainan</p>
+      <div class="code-display" id="waitCode">—</div>
+      <div class="spinner" id="waitSpinner"></div>
+      <p class="status-line" id="waitStatus">Menunggu pemain lain memasukkan kode & menekan Main…</p>
+      <div class="countdown-num hidden" id="countdownNum"></div>
+    </div>
+    <button class="btn btn-ghost" id="cancelWaitBtn">Batal</button>
+  </section>
+
+  <!-- ===================== GAME SCREEN ===================== -->
+  <section class="card hidden" id="screen-game">
+    <div class="top-stats">
+      <span class="clue-tag" id="clueTag">— angka</span>
+      <span class="timer" id="gameTimer">00:00</span>
+    </div>
+    <div class="mistakes">Kesalahan: <b id="gameMistakes">0</b> &nbsp;·&nbsp; Lawan: <span id="opponentNameTag">—</span></div>
+    <div class="board-wrap">
+      <div class="board" id="gameBoard"></div>
+      <div class="board-lock hidden" id="boardLock">Bersiap…</div>
+    </div>
+    <div class="pad" id="gamePad"></div>
+    <div class="status-line" id="gameStatus">Klik kotak kosong, lalu pilih angka. Klik angka terisi untuk menyorot angka yang sama.</div>
+  </section>
+
+  <!-- ===================== RESULT SCREEN ===================== -->
+  <section class="card hidden" id="screen-result">
+    <h2 style="text-align:center; font-size:18px;">Hasil Pertandingan</h2>
+    <div class="result-row me" id="resultMeRow">
+      <span id="resultMeName">Kamu</span><span id="resultMeTime">--:--</span>
+    </div>
+    <div class="result-row" id="resultOppRow">
+      <span id="resultOppName">Lawan</span><span id="resultOppTime">Menunggu…</span>
+    </div>
+    <div class="winner-banner hidden" id="winnerBanner"></div>
+    <button class="btn btn-primary" id="playAgainBtn">Main Lagi</button>
+  </section>
+
+  <footer>Kode disinkronkan lewat Google Apps Script — kedua HP butuh koneksi internet & URL Apps Script yang sama.</footer>
 </div>
 
 <script>
-/* ======================= SUDOKU ENGINE ======================= */
-function shuffle(arr){
+/* ============================================================
+   THEME
+============================================================ */
+document.getElementById('themeSelect').addEventListener('change', e=>{
+  document.documentElement.setAttribute('data-theme', e.target.value);
+});
+
+/* ============================================================
+   SEEDED RNG (mulberry32) + deterministic sudoku engine
+============================================================ */
+function hashSeed(str){
+  let h = 1779033703 ^ str.length;
+  for(let i=0;i<str.length;i++){
+    h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+    h = (h<<13) | (h>>>19);
+  }
+  h = Math.imul(h ^ (h>>>16), 2246822507);
+  h = Math.imul(h ^ (h>>>13), 3266489909);
+  h ^= h>>>16;
+  return h>>>0;
+}
+function mulberry32(a){
+  return function(){
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a>>>15), 1 | a);
+    t = (t + Math.imul(t ^ (t>>>7), 61 | t)) ^ t;
+    return ((t ^ (t>>>14)) >>> 0) / 4294967296;
+  };
+}
+function shuffle(arr, rng){
   for(let i=arr.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
+    const j=Math.floor(rng()*(i+1));
     [arr[i],arr[j]]=[arr[j],arr[i]];
   }
   return arr;
 }
 function isValid(g,r,c,n){
-  for(let i=0;i<9;i++){
-    if(g[r][i]===n) return false;
-    if(g[i][c]===n) return false;
-  }
+  for(let i=0;i<9;i++){ if(g[r][i]===n) return false; if(g[i][c]===n) return false; }
   const br=Math.floor(r/3)*3, bc=Math.floor(c/3)*3;
   for(let i=br;i<br+3;i++) for(let j=bc;j<bc+3;j++) if(g[i][j]===n) return false;
   return true;
@@ -270,22 +319,22 @@ function findEmpty(g){
   for(let r=0;r<9;r++) for(let c=0;c<9;c++) if(g[r][c]===0) return [r,c];
   return null;
 }
-function fillGrid(g){
+function fillGrid(g, rng){
   const pos=findEmpty(g);
   if(!pos) return true;
   const [r,c]=pos;
-  for(const n of shuffle([1,2,3,4,5,6,7,8,9])){
+  for(const n of shuffle([1,2,3,4,5,6,7,8,9], rng)){
     if(isValid(g,r,c,n)){
       g[r][c]=n;
-      if(fillGrid(g)) return true;
+      if(fillGrid(g, rng)) return true;
       g[r][c]=0;
     }
   }
   return false;
 }
-function generateFullGrid(){
+function generateFullGrid(rng){
   const g=Array.from({length:9},()=>Array(9).fill(0));
-  fillGrid(g);
+  fillGrid(g, rng);
   return g;
 }
 function countSolutions(g, limit){
@@ -297,9 +346,7 @@ function countSolutions(g, limit){
     const [r,c]=pos;
     for(let n=1;n<=9;n++){
       if(isValid(b,r,c,n)){
-        b[r][c]=n;
-        solve(b);
-        b[r][c]=0;
+        b[r][c]=n; solve(b); b[r][c]=0;
         if(count>=limit) return;
       }
     }
@@ -307,236 +354,347 @@ function countSolutions(g, limit){
   solve(g.map(row=>row.slice()));
   return count;
 }
-function generatePuzzle(fullGrid, targetClues){
+function generatePuzzle(fullGrid, targetClues, rng){
   const puzzle=fullGrid.map(row=>row.slice());
   const cells=[];
   for(let r=0;r<9;r++) for(let c=0;c<9;c++) cells.push([r,c]);
-  shuffle(cells);
+  shuffle(cells, rng);
   let clues=81;
   for(const [r,c] of cells){
     if(clues<=targetClues) break;
     const backup=puzzle[r][c];
     puzzle[r][c]=0;
-    if(countSolutions(puzzle,2)!==1){
-      puzzle[r][c]=backup;
-    } else {
-      clues--;
-    }
+    if(countSolutions(puzzle,2)!==1){ puzzle[r][c]=backup; }
+    else { clues--; }
   }
   return {puzzle, clues};
 }
+function buildPuzzleFromCode(seedStr, numClues){
+  const rng = mulberry32(hashSeed(seedStr));
+  const full = generateFullGrid(rng);
+  const {puzzle, clues} = generatePuzzle(full, numClues, rng);
+  return {solution:full, puzzle, actualClues:clues};
+}
 
-/* ======================= GAME STATE ======================= */
-const players = {
-  1:{ userGrid:null, given:null, solution:null, selected:null, startTime:null,
-      intervalId:null, mistakes:0, finished:false, elapsedMs:0 },
-  2:{ userGrid:null, given:null, solution:null, selected:null, startTime:null,
-      intervalId:null, mistakes:0, finished:false, elapsedMs:0 }
-};
-let currentSolution=null, currentPuzzle=null, currentClues=0;
+/* ============================================================
+   CODE PARSING
+============================================================ */
+const CODE_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+function parseCode(raw){
+  const code = (raw||'').trim().toUpperCase();
+  if(code.length!==8) return {ok:false, error:'Kode harus 8 karakter (6 acak + 2 digit).'};
+  const seed = code.slice(0,6);
+  const cluesStr = code.slice(6,8);
+  if(!/^[0-9A-Z]{6}$/.test(seed)) return {ok:false, error:'6 karakter pertama harus huruf/angka (0-9, A-Z).'};
+  if(!/^[0-9]{2}$/.test(cluesStr)) return {ok:false, error:'2 karakter terakhir harus angka (17–70).'};
+  const numClues = parseInt(cluesStr,10);
+  if(numClues<17 || numClues>70) return {ok:false, error:'Jumlah petunjuk awal harus antara 17 dan 70.'};
+  return {ok:true, code, seed, numClues};
+}
+function randomCode(){
+  let seed='';
+  for(let i=0;i<6;i++) seed += CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)];
+  const numClues = Math.floor(Math.random()*(70-17+1))+17;
+  return seed + String(numClues).padStart(2,'0');
+}
+document.getElementById('randomCodeBtn').addEventListener('click', ()=>{
+  document.getElementById('roomCode').value = randomCode();
+});
 
-function newGame(){
-  const full = generateFullGrid();
-  const target = Math.floor(Math.random()*(30-17+1))+17; // 17..30
-  const {puzzle, clues} = generatePuzzle(full, target);
-  currentSolution = full;
-  currentPuzzle = puzzle;
-  currentClues = clues;
-  document.getElementById('clueCountLabel').textContent = clues;
+/* ============================================================
+   API HELPER (Google Apps Script)
+============================================================ */
+function apiUrl(){ return document.getElementById('appsScriptUrl').value.trim(); }
+async function api(action, data){
+  const url = apiUrl();
+  const res = await fetch(url, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify(Object.assign({action}, data))
+  });
+  return res.json();
+}
 
-  [1,2].forEach(p=>{
-    const st = players[p];
-    clearInterval(st.intervalId);
-    st.userGrid = puzzle.map(row=>row.slice());
-    st.given = puzzle.map(row=>row.map(v=>v!==0));
-    st.solution = full;
-    st.selected = null;
-    st.startTime = Date.now();
-    st.elapsedMs = 0;
-    st.mistakes = 0;
-    st.finished = false;
-    document.getElementById('mistakes-'+p).textContent = '0';
-    document.getElementById('timer-'+p).textContent = '00:00';
-    document.getElementById('status-'+p).className='status-line';
-    document.getElementById('status-'+p).textContent='Klik kotak kosong, lalu pilih angka.';
-    document.getElementById('submit-'+p).disabled = true;
-    document.getElementById('bar-'+p).style.height = '0%';
-    renderBoard(p);
-    st.intervalId = setInterval(()=>tick(p), 250);
+/* ============================================================
+   GAME STATE
+============================================================ */
+const clientId = 'c' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+let game = null;   // active puzzle/session state
+let pollTimer = null, tickTimer = null, resultPollTimer = null;
+
+function formatTime(ms){
+  const s = Math.max(0, Math.floor(ms/1000));
+  return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+}
+function showScreen(id){
+  ['screen-setup','screen-waiting','screen-game','screen-result'].forEach(s=>{
+    document.getElementById(s).classList.toggle('hidden', s!==id);
   });
 }
 
-function tick(p){
-  const st = players[p];
-  if(st.finished) return;
-  st.elapsedMs = Date.now() - st.startTime;
-  document.getElementById('timer-'+p).textContent = formatTime(st.elapsedMs);
-}
-function formatTime(ms){
-  const totalSec = Math.floor(ms/1000);
-  const m = String(Math.floor(totalSec/60)).padStart(2,'0');
-  const s = String(totalSec%60).padStart(2,'0');
-  return m+':'+s;
+/* ---------- PLAY BUTTON ---------- */
+document.getElementById('playBtn').addEventListener('click', async ()=>{
+  const errEl = document.getElementById('setupError');
+  errEl.textContent='';
+  const name = document.getElementById('playerName').value.trim() || 'Pemain';
+  const url = apiUrl();
+  if(!url){ errEl.textContent='Isi dulu URL Apps Script.'; return; }
+  const parsed = parseCode(document.getElementById('roomCode').value);
+  if(!parsed.ok){ errEl.textContent = parsed.error; return; }
+
+  const {solution, puzzle, actualClues} = buildPuzzleFromCode(parsed.seed, parsed.numClues);
+  game = {
+    code: parsed.code, name, solution, puzzle,
+    userGrid: puzzle.map(r=>r.slice()),
+    given: puzzle.map(r=>r.map(v=>v!==0)),
+    selected:null, highlightDigit:null, mistakes:0, finished:false,
+    numClues: actualClues, syncedStart:null, elapsedMs:0, opponentName:null
+  };
+
+  document.getElementById('clueTag').textContent = actualClues + ' angka';
+  buildBoardDOM();
+  buildPad();
+  document.getElementById('boardLock').classList.remove('hidden');
+  document.getElementById('boardLock').textContent = 'Bersiap…';
+  document.getElementById('gameStatus').textContent = 'Klik kotak kosong, lalu pilih angka.';
+  document.getElementById('gameMistakes').textContent='0';
+  showScreen('screen-game');
+  document.getElementById('gameTimer').textContent='00:00';
+
+  document.getElementById('waitCode').textContent = parsed.code;
+  document.getElementById('countdownNum').classList.add('hidden');
+  document.getElementById('waitSpinner').classList.remove('hidden');
+  document.getElementById('waitStatus').textContent = 'Menghubungkan ke lawan…';
+  showScreen('screen-waiting');
+
+  try{
+    const res = await api('join', {code:parsed.code, clientId, name});
+    if(!res.ok){
+      document.getElementById('waitStatus').textContent = res.error==='room_full' ? 'Kode ini sudah dipakai 2 pemain lain. Buat kode baru.' : 'Gagal terhubung: '+(res.error||'unknown');
+      return;
+    }
+    game.opponentName = res.opponentName;
+    document.getElementById('opponentNameTag').textContent = res.opponentName || '—';
+    if(res.startTime){
+      handleSyncedStart(res.startTime);
+    } else {
+      document.getElementById('waitStatus').textContent = 'Kode tersimpan. Menunggu pemain lain memasukkan kode yang sama & menekan Main…';
+      pollStatus(parsed.code);
+    }
+  }catch(err){
+    document.getElementById('waitStatus').textContent = 'Gagal terhubung ke Apps Script. Cek URL & koneksi internet.';
+  }
+});
+
+function pollStatus(code){
+  clearInterval(pollTimer);
+  pollTimer = setInterval(async ()=>{
+    try{
+      const res = await api('status', {code, clientId});
+      if(res.ok){
+        if(res.opponentName) {
+          game.opponentName = res.opponentName;
+          document.getElementById('opponentNameTag').textContent = res.opponentName;
+        }
+        if(res.startTime){
+          clearInterval(pollTimer);
+          handleSyncedStart(res.startTime);
+        }
+      }
+    }catch(e){ /* keep retrying */ }
+  }, 1500);
 }
 
-/* ======================= RENDERING ======================= */
-function renderBoard(p){
-  const boardEl = document.getElementById('board-'+p);
+function handleSyncedStart(startTimeMs){
+  game.syncedStart = startTimeMs;
+  document.getElementById('waitSpinner').classList.add('hidden');
+  const cd = document.getElementById('countdownNum');
+  cd.classList.remove('hidden');
+  document.getElementById('waitStatus').textContent = 'Lawan ditemukan! Bersiap-siap…';
+  const cdTick = setInterval(()=>{
+    const remain = startTimeMs - Date.now();
+    if(remain<=0){
+      clearInterval(cdTick);
+      cd.textContent='MULAI!';
+      setTimeout(()=>startGameplay(), 400);
+      return;
+    }
+    cd.textContent = Math.ceil(remain/1000);
+  }, 100);
+}
+
+function startGameplay(){
+  showScreen('screen-game');
+  document.getElementById('boardLock').classList.add('hidden');
+  clearInterval(tickTimer);
+  tickTimer = setInterval(()=>{
+    if(!game || game.finished) return;
+    game.elapsedMs = Date.now() - game.syncedStart;
+    document.getElementById('gameTimer').textContent = formatTime(game.elapsedMs);
+  }, 250);
+}
+
+document.getElementById('cancelWaitBtn').addEventListener('click', ()=>{
+  clearInterval(pollTimer); clearInterval(tickTimer);
+  showScreen('screen-setup');
+});
+
+/* ---------- BOARD RENDERING ---------- */
+function buildBoardDOM(){
+  const boardEl = document.getElementById('gameBoard');
   boardEl.innerHTML='';
-  const st = players[p];
   for(let r=0;r<9;r++){
     for(let c=0;c<9;c++){
-      const cell = document.createElement('div');
+      const cell=document.createElement('div');
       cell.className='cell';
       if((c+1)%3===0 && c!==8) cell.classList.add('border-r');
       if((r+1)%3===0 && r!==8) cell.classList.add('border-b');
-      const val = st.userGrid[r][c];
-      if(st.given[r][c]){
-        cell.classList.add('given');
-        cell.textContent = val;
-      } else {
-        cell.textContent = val!==0 ? val : '';
-        if(val!==0 && val!==st.solution[r][c]) cell.classList.add('mistake');
-        cell.addEventListener('click', ()=>selectCell(p,r,c));
-      }
       cell.dataset.r=r; cell.dataset.c=c;
+      cell.addEventListener('click', ()=>onCellClick(r,c));
       boardEl.appendChild(cell);
     }
   }
-  renderPad(p);
-  updateSelectionHighlight(p);
+  renderBoard();
 }
-function renderPad(p){
-  const pad = document.getElementById('pad-'+p);
+function renderBoard(){
+  const boardEl = document.getElementById('gameBoard');
+  [...boardEl.children].forEach(cell=>{
+    const r=+cell.dataset.r, c=+cell.dataset.c;
+    const val = game.userGrid[r][c];
+    cell.classList.remove('given','mistake','selected','peer','same-num');
+    cell.textContent = val!==0 ? val : '';
+    if(game.given[r][c]) cell.classList.add('given');
+    else if(val!==0 && val!==game.solution[r][c]) cell.classList.add('mistake');
+
+    if(game.selected){
+      const [sr,sc]=game.selected;
+      if(r===sr && c===sc) cell.classList.add('selected');
+      else if(r===sr || c===sc || (Math.floor(r/3)===Math.floor(sr/3) && Math.floor(c/3)===Math.floor(sc/3))) cell.classList.add('peer');
+    }
+    if(game.highlightDigit && val===game.highlightDigit) cell.classList.add('same-num');
+  });
+}
+function buildPad(){
+  const pad=document.getElementById('gamePad');
   pad.innerHTML='';
   for(let n=1;n<=9;n++){
     const b=document.createElement('button');
     b.textContent=n;
-    b.addEventListener('click', ()=>placeNumber(p,n));
+    b.addEventListener('click', ()=>onPadNumber(n));
     pad.appendChild(b);
   }
   const erase=document.createElement('button');
-  erase.textContent='⌫';
-  erase.className='erase';
-  erase.addEventListener('click', ()=>placeNumber(p,0));
+  erase.textContent='⌫'; erase.className='erase';
+  erase.addEventListener('click', ()=>onPadNumber(0));
   pad.appendChild(erase);
 }
-function selectCell(p,r,c){
-  const st = players[p];
-  if(st.finished) return;
-  if(st.given[r][c]) return;
-  st.selected = [r,c];
-  updateSelectionHighlight(p);
+function onCellClick(r,c){
+  if(!game || game.finished || game.syncedStart===null || Date.now()<game.syncedStart) return;
+  const val = game.userGrid[r][c];
+  game.selected=[r,c];
+  game.highlightDigit = val!==0 ? val : null;
+  renderBoard();
 }
-function updateSelectionHighlight(p){
-  const st = players[p];
-  const boardEl = document.getElementById('board-'+p);
-  [...boardEl.children].forEach(cell=>{
-    cell.classList.remove('selected','peer');
-    if(!st.selected) return;
-    const r=+cell.dataset.r, c=+cell.dataset.c;
-    const [sr,sc]=st.selected;
-    if(r===sr && c===sc) cell.classList.add('selected');
-    else if(r===sr || c===sc || (Math.floor(r/3)===Math.floor(sr/3) && Math.floor(c/3)===Math.floor(sc/3))) cell.classList.add('peer');
-  });
+function onPadNumber(n){
+  if(!game || game.finished || !game.selected) return;
+  if(game.syncedStart===null || Date.now()<game.syncedStart) return;
+  const [r,c]=game.selected;
+  if(game.given[r][c]) return;
+  game.userGrid[r][c]=n;
+  if(n!==0 && n!==game.solution[r][c]) game.mistakes++;
+  document.getElementById('gameMistakes').textContent = game.mistakes;
+  game.highlightDigit = n!==0 ? n : null;
+  autoFillIfNearlyDone();
+  renderBoard();
+  checkWin();
 }
-function placeNumber(p,n){
-  const st = players[p];
-  if(st.finished || !st.selected) return;
-  const [r,c]=st.selected;
-  if(st.given[r][c]) return;
-  st.userGrid[r][c] = n;
-  if(n!==0 && n!==st.solution[r][c]) st.mistakes++;
-  document.getElementById('mistakes-'+p).textContent = st.mistakes;
-  renderBoard(p);
-  st.selected=[r,c];
-  updateSelectionHighlight(p);
-  updateProgressBar(p);
-  checkWin(p);
-}
-function updateProgressBar(p){
-  const st=players[p];
-  let filled=0, total=0;
+function autoFillIfNearlyDone(){
+  const empties=[];
   for(let r=0;r<9;r++) for(let c=0;c<9;c++){
-    if(!st.given[r][c]){ total++; if(st.userGrid[r][c]!==0) filled++; }
+    if(!game.given[r][c] && game.userGrid[r][c]===0) empties.push([r,c]);
   }
-  const pct = total===0 ? 0 : Math.round((filled/total)*100);
-  document.getElementById('bar-'+p).style.height = pct+'%';
-}
-function checkWin(p){
-  const st = players[p];
-  for(let r=0;r<9;r++) for(let c=0;c<9;c++){
-    if(st.userGrid[r][c] !== st.solution[r][c]) return;
+  if(empties.length>0 && empties.length<=5){
+    empties.forEach(([r,c])=>{ game.userGrid[r][c] = game.solution[r][c]; });
   }
-  st.finished = true;
-  clearInterval(st.intervalId);
-  const statusEl = document.getElementById('status-'+p);
-  statusEl.className='status-line done';
-  statusEl.textContent = 'Selesai dalam ' + formatTime(st.elapsedMs) + ' 🎉';
-  document.getElementById('submit-'+p).disabled = false;
 }
-
-/* ======================= KEYBOARD SUPPORT ======================= */
 document.addEventListener('keydown', (e)=>{
-  [1,2].forEach(p=>{
-    const st = players[p];
-    if(!st.selected || st.finished) return;
-    if(e.key>='1' && e.key<='9'){
-      // only act on the board whose panel currently has focus/last click; simple heuristic:
-      // require the active element to be inside this panel, otherwise skip.
-    }
-  });
-});
-// Simpler robust approach: track which player's board was last clicked.
-let lastActivePlayer = null;
-document.getElementById('board-1').addEventListener('click', ()=>lastActivePlayer=1);
-document.getElementById('board-2').addEventListener('click', ()=>lastActivePlayer=2);
-document.addEventListener('keydown',(e)=>{
-  if(!lastActivePlayer) return;
-  const p = lastActivePlayer;
-  if(e.key>='1' && e.key<='9'){ placeNumber(p, parseInt(e.key)); }
-  else if(e.key==='Backspace' || e.key==='Delete'){ placeNumber(p,0); }
+  if(!game || game.finished || !game.selected) return;
+  if(e.key>='1' && e.key<='9') onPadNumber(parseInt(e.key));
+  else if(e.key==='Backspace' || e.key==='Delete') onPadNumber(0);
 });
 
-/* ======================= SCORE SUBMISSION ======================= */
-[1,2].forEach(p=>{
-  document.getElementById('submit-'+p).addEventListener('click', ()=>submitScore(p));
-});
-function submitScore(p){
-  const st = players[p];
-  const url = document.getElementById('appsScriptUrl').value.trim();
-  const name = document.getElementById('name-'+p).value.trim() || ('Pemain '+p);
-  const payload = {
-    nama: name,
-    waktu_detik: Math.round(st.elapsedMs/1000),
-    waktu_format: formatTime(st.elapsedMs),
-    kesalahan: st.mistakes,
-    petunjuk_awal: currentClues,
-    tanggal: new Date().toISOString()
-  };
-  const statusEl = document.getElementById('status-'+p);
-  if(!url){
-    statusEl.textContent = 'Isi dulu URL Apps Script di atas sebelum kirim skor.';
-    return;
+/* ---------- WIN / SCORE / RESULT ---------- */
+function checkWin(){
+  for(let r=0;r<9;r++) for(let c=0;c<9;c++){
+    if(game.userGrid[r][c]!==game.solution[r][c]) return;
   }
-  document.getElementById('submit-'+p).disabled = true;
-  statusEl.textContent = 'Mengirim skor...';
-  fetch(url, {
-    method:'POST',
-    mode:'no-cors',
-    headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body: JSON.stringify(payload)
-  }).then(()=>{
-    statusEl.textContent = 'Skor terkirim ke Google Sheet ✅ ('+payload.waktu_format+')';
-  }).catch(()=>{
-    statusEl.textContent = 'Gagal mengirim. Cek URL Apps Script & koneksi.';
-    document.getElementById('submit-'+p).disabled = false;
-  });
+  game.finished=true;
+  clearInterval(tickTimer);
+  const statusEl=document.getElementById('gameStatus');
+  statusEl.className='status-line done';
+  statusEl.textContent='Selesai dalam '+formatTime(game.elapsedMs)+' 🎉 Mengirim skor…';
+  submitAndWaitResult();
+}
+async function submitAndWaitResult(){
+  document.getElementById('resultMeName').textContent = game.name;
+  document.getElementById('resultMeTime').textContent = formatTime(game.elapsedMs);
+  document.getElementById('resultOppName').textContent = game.opponentName || 'Lawan';
+  document.getElementById('resultOppTime').textContent = 'Menunggu…';
+  document.getElementById('winnerBanner').classList.add('hidden');
+  showScreen('screen-result');
+
+  try{
+    await api('score', {
+      code: game.code, clientId, name: game.name,
+      timeSeconds: Math.round(game.elapsedMs/1000),
+      timeFormatted: formatTime(game.elapsedMs),
+      mistakes: game.mistakes, numClues: game.numClues
+    });
+  }catch(e){ /* still poll for opponent result even if this failed */ }
+
+  clearInterval(resultPollTimer);
+  resultPollTimer = setInterval(async ()=>{
+    try{
+      const res = await api('result', {code: game.code});
+      if(!res.ok) return;
+      const mine = clientId; // find which is "me" by comparing name/time we already know
+      let myResult=null, oppResult=null, oppNameFallback=null;
+      // Determine which side is me by matching submitted values (server doesn't echo clientId per side, so infer by name+time closeness first, fallback: whichever isn't equal to our own known values)
+      const candidates = [res.p1result, res.p2result].filter(Boolean);
+      candidates.forEach(r=>{
+        if(r.name===game.name && r.timeSeconds===Math.round(game.elapsedMs/1000)) myResult=r;
+      });
+      candidates.forEach(r=>{ if(r!==myResult) oppResult=r; });
+      if(!myResult && candidates.length===1){ myResult = candidates[0]; }
+
+      if(oppResult){
+        clearInterval(resultPollTimer);
+        document.getElementById('resultOppName').textContent = oppResult.name;
+        document.getElementById('resultOppTime').textContent = formatTime(oppResult.timeSeconds*1000)+' · '+oppResult.mistakes+' salah';
+        announceWinner(myResult||{timeSeconds:Math.round(game.elapsedMs/1000), mistakes:game.mistakes}, oppResult);
+      }
+    }catch(e){ /* keep polling */ }
+  }, 2000);
+}
+function announceWinner(mine, opp){
+  const banner=document.getElementById('winnerBanner');
+  banner.classList.remove('hidden','win','lose','draw');
+  if(mine.timeSeconds<opp.timeSeconds){ banner.classList.add('win'); banner.textContent='🏆 Kamu Menang!'; }
+  else if(mine.timeSeconds>opp.timeSeconds){ banner.classList.add('lose'); banner.textContent='😢 Kamu Kalah'; }
+  else {
+    if(mine.mistakes<opp.mistakes){ banner.classList.add('win'); banner.textContent='🏆 Kamu Menang! (waktu sama, kesalahan lebih sedikit)'; }
+    else if(mine.mistakes>opp.mistakes){ banner.classList.add('lose'); banner.textContent='😢 Kamu Kalah (waktu sama, kesalahan lebih banyak)'; }
+    else { banner.classList.add('draw'); banner.textContent='🤝 Seri!'; }
+  }
 }
 
-/* ======================= INIT ======================= */
-document.getElementById('newGameBtn').addEventListener('click', newGame);
-newGame();
+document.getElementById('playAgainBtn').addEventListener('click', ()=>{
+  clearInterval(pollTimer); clearInterval(tickTimer); clearInterval(resultPollTimer);
+  game=null;
+  document.getElementById('roomCode').value='';
+  document.getElementById('setupError').textContent='';
+  showScreen('screen-setup');
+});
 </script>
 </body>
 </html>
