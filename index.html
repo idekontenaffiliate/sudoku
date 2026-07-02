@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sudoku Duel — Tanding 2 Pemain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#161826;
+    --bg-2:#1D2033;
+    --panel:#242739;
+    --panel-2:#2B2F45;
+    --line:#3B3F5C;
+    --ink:#F1F0EC;
+    --muted:#9295B0;
+    --p1:#5EEAD4;
+    --p1-dim:#274944;
+    --p2:#F7B267;
+    --p2-dim:#4A3A22;
+    --danger:#F76E6E;
+    --success:#8FE388;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 15% 0%, #23273f 0%, transparent 45%),
+      radial-gradient(circle at 85% 100%, #202a3a 0%, transparent 45%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding:28px 18px 60px;
+  }
+  h1,h2,h3{font-family:'Space Grotesk',sans-serif; margin:0;}
+  .wrap{max-width:1180px; margin:0 auto;}
+
+  /* ---------- HEADER ---------- */
+  header{text-align:center; margin-bottom:22px;}
+  .eyebrow{
+    display:inline-block; font-family:'JetBrains Mono',monospace; font-size:12px;
+    letter-spacing:.18em; color:var(--muted); text-transform:uppercase; margin-bottom:8px;
+  }
+  h1{font-size:clamp(28px,4.5vw,44px); font-weight:700; letter-spacing:-0.01em;}
+  h1 span{color:var(--p1);}
+  h1 em{color:var(--p2); font-style:normal;}
+  .sub{color:var(--muted); font-size:14px; margin-top:6px;}
+
+  /* ---------- CONTROLS ---------- */
+  .controls{
+    display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center;
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 16px; margin:22px 0; box-shadow:0 8px 24px -12px rgba(0,0,0,.5);
+  }
+  .controls input[type=text], .controls input[type=url]{
+    background:var(--bg-2); border:1px solid var(--line); color:var(--ink);
+    padding:9px 12px; border-radius:8px; font-family:'Inter'; font-size:13px; outline:none;
+    transition:border-color .15s;
+  }
+  .controls input:focus{border-color:var(--p1);}
+  #appsScriptUrl{width:300px; max-width:46vw;}
+  .btn{
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px;
+    border:none; border-radius:8px; padding:10px 18px; cursor:pointer;
+    transition:transform .12s ease, filter .12s ease;
+  }
+  .btn:active{transform:scale(.96);}
+  .btn-primary{background:linear-gradient(135deg,var(--p1),#3fc9b0); color:#0C1420;}
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-ghost{background:transparent; color:var(--ink); border:1px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--p2); color:var(--p2);}
+  .clue-badge{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted);
+    border:1px dashed var(--line); border-radius:20px; padding:6px 12px;
+  }
+  .clue-badge b{color:var(--ink);}
+
+  /* ---------- ARENA ---------- */
+  .arena{
+    display:grid; grid-template-columns: 1fr 74px 1fr; gap:14px; align-items:start;
+  }
+  @media (max-width:880px){
+    .arena{grid-template-columns:1fr;}
+    .vs-col{flex-direction:row !important; height:auto !important; padding:10px 0 !important;}
+    .vs-bars{flex-direction:row !important; width:100% !important; height:10px !important;}
+    .vs-bar{height:10px !important; width:auto !important; flex:1;}
+  }
+
+  .panel{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px; position:relative; overflow:hidden;
+  }
+  .panel.p1{box-shadow: inset 3px 0 0 var(--p1);}
+  .panel.p2{box-shadow: inset 3px 0 0 var(--p2);}
+
+  .p-head{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap;}
+  .p-name-input{
+    background:var(--bg-2); border:1px solid var(--line); color:var(--ink);
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px;
+    padding:8px 10px; border-radius:8px; outline:none; width:150px;
+  }
+  .panel.p1 .p-name-input:focus{border-color:var(--p1);}
+  .panel.p2 .p-name-input:focus{border-color:var(--p2);}
+
+  .stat-row{display:flex; gap:8px; align-items:center;}
+  .timer{
+    font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700;
+    padding:6px 10px; border-radius:8px; background:var(--bg-2);
+  }
+  .panel.p1 .timer{color:var(--p1);}
+  .panel.p2 .timer{color:var(--p2);}
+  .mistakes{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted);}
+  .mistakes b{color:var(--danger);}
+
+  /* board */
+  .board{
+    display:grid; grid-template-columns:repeat(9,1fr);
+    aspect-ratio:1/1; width:100%; max-width:420px; margin:14px auto 12px;
+    background:var(--line); gap:1px; border:2px solid var(--line); border-radius:6px; overflow:hidden;
+  }
+  .cell{
+    background:var(--bg-2); display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:clamp(13px,2.6vw,19px); font-weight:500;
+    color:var(--ink); cursor:pointer; user-select:none; position:relative;
+  }
+  .cell.given{color:var(--muted); font-weight:700; cursor:default; background:var(--panel-2);}
+  .cell.mistake{color:var(--danger);}
+  .panel.p1 .cell.selected{background:var(--p1-dim); outline:1px solid var(--p1);}
+  .panel.p2 .cell.selected{background:var(--p2-dim); outline:1px solid var(--p2);}
+  .panel.p1 .cell.peer{background:#1B2E2B;}
+  .panel.p2 .cell.peer{background:#2E2718;}
+  .cell.border-r{border-right:2px solid var(--line);}
+  .cell.border-b{border-bottom:2px solid var(--line);}
+
+  /* number pad */
+  .pad{display:grid; grid-template-columns:repeat(10,1fr); gap:6px;}
+  .pad button{
+    background:var(--bg-2); border:1px solid var(--line); color:var(--ink);
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px;
+    border-radius:8px; padding:9px 0; cursor:pointer; transition:.12s;
+  }
+  .panel.p1 .pad button:hover{border-color:var(--p1); color:var(--p1);}
+  .panel.p2 .pad button:hover{border-color:var(--p2); color:var(--p2);}
+  .pad button.erase{grid-column:span 1; color:var(--danger); font-size:11px;}
+
+  .status-line{
+    margin-top:12px; font-size:13px; color:var(--muted); min-height:18px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .status-line.done{color:var(--success); font-weight:700;}
+
+  .submit-row{display:flex; gap:8px; margin-top:10px;}
+  .submit-row button{flex:1;}
+  .submit-row button:disabled{opacity:.35; cursor:not-allowed;}
+
+  /* VS divider */
+  .vs-col{
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+    height:100%; padding-top:40px; gap:14px;
+  }
+  .vs-badge{
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px;
+    width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,var(--p1),var(--p2)); color:#10131F;
+    box-shadow:0 6px 18px -6px rgba(0,0,0,.6);
+  }
+  .vs-bars{display:flex; flex-direction:column; gap:8px; width:10px; height:280px;}
+  .vs-bar{
+    flex:1; width:10px; background:var(--bg-2); border-radius:6px; position:relative; overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .vs-bar-fill{
+    position:absolute; bottom:0; left:0; width:100%; height:0%; border-radius:6px;
+    transition:height .25s ease;
+  }
+  .vs-bar.p1 .vs-bar-fill{background:linear-gradient(180deg,var(--p1),#2c8f80);}
+  .vs-bar.p2 .vs-bar-fill{background:linear-gradient(180deg,var(--p2),#c2823f);}
+
+  footer{text-align:center; color:var(--muted); font-size:12px; margin-top:36px; font-family:'JetBrains Mono',monospace;}
+  footer a{color:var(--p1);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="eyebrow">Papan · Waktu · Skor ke Spreadsheet</span>
+    <h1><span>SUDOKU</span> <em>DUEL</em></h1>
+    <p class="sub">Dua pemain, satu papan soal yang sama, siapa lebih cepat &amp; akurat.</p>
+  </header>
+
+  <div class="controls">
+    <input type="url" id="appsScriptUrl" placeholder="Tempel URL Web App Google Apps Script di sini">
+    <span class="clue-badge">Petunjuk awal: <b id="clueCountLabel">–</b> angka (rentang 17–30)</span>
+    <button class="btn btn-primary" id="newGameBtn">Soal Baru</button>
+  </div>
+
+  <div class="arena">
+    <!-- PLAYER 1 -->
+    <section class="panel p1" id="panel-1">
+      <div class="p-head">
+        <input class="p-name-input" id="name-1" value="Pemain 1" maxlength="18">
+        <div class="stat-row">
+          <span class="timer" id="timer-1">00:00</span>
+        </div>
+      </div>
+      <div class="mistakes">Kesalahan: <b id="mistakes-1">0</b></div>
+      <div class="board" id="board-1"></div>
+      <div class="pad" id="pad-1"></div>
+      <div class="status-line" id="status-1">Klik kotak kosong, lalu pilih angka.</div>
+      <div class="submit-row">
+        <button class="btn btn-primary" id="submit-1" disabled>Kirim Skor ke Sheet</button>
+      </div>
+    </section>
+
+    <!-- VS DIVIDER -->
+    <div class="vs-col">
+      <div class="vs-badge">VS</div>
+      <div class="vs-bars">
+        <div class="vs-bar p1"><div class="vs-bar-fill" id="bar-1"></div></div>
+        <div class="vs-bar p2"><div class="vs-bar-fill" id="bar-2"></div></div>
+      </div>
+    </div>
+
+    <!-- PLAYER 2 -->
+    <section class="panel p2" id="panel-2">
+      <div class="p-head">
+        <input class="p-name-input" id="name-2" value="Pemain 2" maxlength="18">
+        <div class="stat-row">
+          <span class="timer" id="timer-2">00:00</span>
+        </div>
+      </div>
+      <div class="mistakes">Kesalahan: <b id="mistakes-2">0</b></div>
+      <div class="board" id="board-2"></div>
+      <div class="pad" id="pad-2"></div>
+      <div class="status-line" id="status-2">Klik kotak kosong, lalu pilih angka.</div>
+      <div class="submit-row">
+        <button class="btn btn-primary" id="submit-2" disabled>Kirim Skor ke Sheet</button>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    Butuh Apps Script-nya? Lihat file <b>AppsScript.gs</b> yang disertakan — tempel ke Google Apps Script, deploy sebagai Web App, lalu tempel URL-nya di atas.
+  </footer>
+</div>
+
+<script>
+/* ======================= SUDOKU ENGINE ======================= */
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+function isValid(g,r,c,n){
+  for(let i=0;i<9;i++){
+    if(g[r][i]===n) return false;
+    if(g[i][c]===n) return false;
+  }
+  const br=Math.floor(r/3)*3, bc=Math.floor(c/3)*3;
+  for(let i=br;i<br+3;i++) for(let j=bc;j<bc+3;j++) if(g[i][j]===n) return false;
+  return true;
+}
+function findEmpty(g){
+  for(let r=0;r<9;r++) for(let c=0;c<9;c++) if(g[r][c]===0) return [r,c];
+  return null;
+}
+function fillGrid(g){
+  const pos=findEmpty(g);
+  if(!pos) return true;
+  const [r,c]=pos;
+  for(const n of shuffle([1,2,3,4,5,6,7,8,9])){
+    if(isValid(g,r,c,n)){
+      g[r][c]=n;
+      if(fillGrid(g)) return true;
+      g[r][c]=0;
+    }
+  }
+  return false;
+}
+function generateFullGrid(){
+  const g=Array.from({length:9},()=>Array(9).fill(0));
+  fillGrid(g);
+  return g;
+}
+function countSolutions(g, limit){
+  let count=0;
+  function solve(b){
+    if(count>=limit) return;
+    const pos=findEmpty(b);
+    if(!pos){ count++; return; }
+    const [r,c]=pos;
+    for(let n=1;n<=9;n++){
+      if(isValid(b,r,c,n)){
+        b[r][c]=n;
+        solve(b);
+        b[r][c]=0;
+        if(count>=limit) return;
+      }
+    }
+  }
+  solve(g.map(row=>row.slice()));
+  return count;
+}
+function generatePuzzle(fullGrid, targetClues){
+  const puzzle=fullGrid.map(row=>row.slice());
+  const cells=[];
+  for(let r=0;r<9;r++) for(let c=0;c<9;c++) cells.push([r,c]);
+  shuffle(cells);
+  let clues=81;
+  for(const [r,c] of cells){
+    if(clues<=targetClues) break;
+    const backup=puzzle[r][c];
+    puzzle[r][c]=0;
+    if(countSolutions(puzzle,2)!==1){
+      puzzle[r][c]=backup;
+    } else {
+      clues--;
+    }
+  }
+  return {puzzle, clues};
+}
+
+/* ======================= GAME STATE ======================= */
+const players = {
+  1:{ userGrid:null, given:null, solution:null, selected:null, startTime:null,
+      intervalId:null, mistakes:0, finished:false, elapsedMs:0 },
+  2:{ userGrid:null, given:null, solution:null, selected:null, startTime:null,
+      intervalId:null, mistakes:0, finished:false, elapsedMs:0 }
+};
+let currentSolution=null, currentPuzzle=null, currentClues=0;
+
+function newGame(){
+  const full = generateFullGrid();
+  const target = Math.floor(Math.random()*(30-17+1))+17; // 17..30
+  const {puzzle, clues} = generatePuzzle(full, target);
+  currentSolution = full;
+  currentPuzzle = puzzle;
+  currentClues = clues;
+  document.getElementById('clueCountLabel').textContent = clues;
+
+  [1,2].forEach(p=>{
+    const st = players[p];
+    clearInterval(st.intervalId);
+    st.userGrid = puzzle.map(row=>row.slice());
+    st.given = puzzle.map(row=>row.map(v=>v!==0));
+    st.solution = full;
+    st.selected = null;
+    st.startTime = Date.now();
+    st.elapsedMs = 0;
+    st.mistakes = 0;
+    st.finished = false;
+    document.getElementById('mistakes-'+p).textContent = '0';
+    document.getElementById('timer-'+p).textContent = '00:00';
+    document.getElementById('status-'+p).className='status-line';
+    document.getElementById('status-'+p).textContent='Klik kotak kosong, lalu pilih angka.';
+    document.getElementById('submit-'+p).disabled = true;
+    document.getElementById('bar-'+p).style.height = '0%';
+    renderBoard(p);
+    st.intervalId = setInterval(()=>tick(p), 250);
+  });
+}
+
+function tick(p){
+  const st = players[p];
+  if(st.finished) return;
+  st.elapsedMs = Date.now() - st.startTime;
+  document.getElementById('timer-'+p).textContent = formatTime(st.elapsedMs);
+}
+function formatTime(ms){
+  const totalSec = Math.floor(ms/1000);
+  const m = String(Math.floor(totalSec/60)).padStart(2,'0');
+  const s = String(totalSec%60).padStart(2,'0');
+  return m+':'+s;
+}
+
+/* ======================= RENDERING ======================= */
+function renderBoard(p){
+  const boardEl = document.getElementById('board-'+p);
+  boardEl.innerHTML='';
+  const st = players[p];
+  for(let r=0;r<9;r++){
+    for(let c=0;c<9;c++){
+      const cell = document.createElement('div');
+      cell.className='cell';
+      if((c+1)%3===0 && c!==8) cell.classList.add('border-r');
+      if((r+1)%3===0 && r!==8) cell.classList.add('border-b');
+      const val = st.userGrid[r][c];
+      if(st.given[r][c]){
+        cell.classList.add('given');
+        cell.textContent = val;
+      } else {
+        cell.textContent = val!==0 ? val : '';
+        if(val!==0 && val!==st.solution[r][c]) cell.classList.add('mistake');
+        cell.addEventListener('click', ()=>selectCell(p,r,c));
+      }
+      cell.dataset.r=r; cell.dataset.c=c;
+      boardEl.appendChild(cell);
+    }
+  }
+  renderPad(p);
+  updateSelectionHighlight(p);
+}
+function renderPad(p){
+  const pad = document.getElementById('pad-'+p);
+  pad.innerHTML='';
+  for(let n=1;n<=9;n++){
+    const b=document.createElement('button');
+    b.textContent=n;
+    b.addEventListener('click', ()=>placeNumber(p,n));
+    pad.appendChild(b);
+  }
+  const erase=document.createElement('button');
+  erase.textContent='⌫';
+  erase.className='erase';
+  erase.addEventListener('click', ()=>placeNumber(p,0));
+  pad.appendChild(erase);
+}
+function selectCell(p,r,c){
+  const st = players[p];
+  if(st.finished) return;
+  if(st.given[r][c]) return;
+  st.selected = [r,c];
+  updateSelectionHighlight(p);
+}
+function updateSelectionHighlight(p){
+  const st = players[p];
+  const boardEl = document.getElementById('board-'+p);
+  [...boardEl.children].forEach(cell=>{
+    cell.classList.remove('selected','peer');
+    if(!st.selected) return;
+    const r=+cell.dataset.r, c=+cell.dataset.c;
+    const [sr,sc]=st.selected;
+    if(r===sr && c===sc) cell.classList.add('selected');
+    else if(r===sr || c===sc || (Math.floor(r/3)===Math.floor(sr/3) && Math.floor(c/3)===Math.floor(sc/3))) cell.classList.add('peer');
+  });
+}
+function placeNumber(p,n){
+  const st = players[p];
+  if(st.finished || !st.selected) return;
+  const [r,c]=st.selected;
+  if(st.given[r][c]) return;
+  st.userGrid[r][c] = n;
+  if(n!==0 && n!==st.solution[r][c]) st.mistakes++;
+  document.getElementById('mistakes-'+p).textContent = st.mistakes;
+  renderBoard(p);
+  st.selected=[r,c];
+  updateSelectionHighlight(p);
+  updateProgressBar(p);
+  checkWin(p);
+}
+function updateProgressBar(p){
+  const st=players[p];
+  let filled=0, total=0;
+  for(let r=0;r<9;r++) for(let c=0;c<9;c++){
+    if(!st.given[r][c]){ total++; if(st.userGrid[r][c]!==0) filled++; }
+  }
+  const pct = total===0 ? 0 : Math.round((filled/total)*100);
+  document.getElementById('bar-'+p).style.height = pct+'%';
+}
+function checkWin(p){
+  const st = players[p];
+  for(let r=0;r<9;r++) for(let c=0;c<9;c++){
+    if(st.userGrid[r][c] !== st.solution[r][c]) return;
+  }
+  st.finished = true;
+  clearInterval(st.intervalId);
+  const statusEl = document.getElementById('status-'+p);
+  statusEl.className='status-line done';
+  statusEl.textContent = 'Selesai dalam ' + formatTime(st.elapsedMs) + ' 🎉';
+  document.getElementById('submit-'+p).disabled = false;
+}
+
+/* ======================= KEYBOARD SUPPORT ======================= */
+document.addEventListener('keydown', (e)=>{
+  [1,2].forEach(p=>{
+    const st = players[p];
+    if(!st.selected || st.finished) return;
+    if(e.key>='1' && e.key<='9'){
+      // only act on the board whose panel currently has focus/last click; simple heuristic:
+      // require the active element to be inside this panel, otherwise skip.
+    }
+  });
+});
+// Simpler robust approach: track which player's board was last clicked.
+let lastActivePlayer = null;
+document.getElementById('board-1').addEventListener('click', ()=>lastActivePlayer=1);
+document.getElementById('board-2').addEventListener('click', ()=>lastActivePlayer=2);
+document.addEventListener('keydown',(e)=>{
+  if(!lastActivePlayer) return;
+  const p = lastActivePlayer;
+  if(e.key>='1' && e.key<='9'){ placeNumber(p, parseInt(e.key)); }
+  else if(e.key==='Backspace' || e.key==='Delete'){ placeNumber(p,0); }
+});
+
+/* ======================= SCORE SUBMISSION ======================= */
+[1,2].forEach(p=>{
+  document.getElementById('submit-'+p).addEventListener('click', ()=>submitScore(p));
+});
+function submitScore(p){
+  const st = players[p];
+  const url = document.getElementById('appsScriptUrl').value.trim();
+  const name = document.getElementById('name-'+p).value.trim() || ('Pemain '+p);
+  const payload = {
+    nama: name,
+    waktu_detik: Math.round(st.elapsedMs/1000),
+    waktu_format: formatTime(st.elapsedMs),
+    kesalahan: st.mistakes,
+    petunjuk_awal: currentClues,
+    tanggal: new Date().toISOString()
+  };
+  const statusEl = document.getElementById('status-'+p);
+  if(!url){
+    statusEl.textContent = 'Isi dulu URL Apps Script di atas sebelum kirim skor.';
+    return;
+  }
+  document.getElementById('submit-'+p).disabled = true;
+  statusEl.textContent = 'Mengirim skor...';
+  fetch(url, {
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify(payload)
+  }).then(()=>{
+    statusEl.textContent = 'Skor terkirim ke Google Sheet ✅ ('+payload.waktu_format+')';
+  }).catch(()=>{
+    statusEl.textContent = 'Gagal mengirim. Cek URL Apps Script & koneksi.';
+    document.getElementById('submit-'+p).disabled = false;
+  });
+}
+
+/* ======================= INIT ======================= */
+document.getElementById('newGameBtn').addEventListener('click', newGame);
+newGame();
+</script>
+</body>
+</html>
