@@ -74,6 +74,7 @@
   .res-Seri{color:var(--amber);font-weight:700;}
   .empty-lb{padding:16px;text-align:center;color:var(--text-dim);font-size:12px;}
   .lb-refresh-note{font-size:10.5px;color:var(--text-dim);text-align:right;margin-top:6px;}
+  .lb-source-tag{font-size:9.5px;color:var(--text-dim);text-align:right;}
 
   #gameScreen{display:none;}
   .gamebar{display:flex;align-items:center;justify-content:space-between;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;gap:8px;}
@@ -193,9 +194,10 @@
         </table>
       </div>
       <div class="lb-refresh-note" id="lbRefreshNote"></div>
+      <div class="lb-source-tag" id="lbSourceTag"></div>
     </div>
 
-    <div class="toplink">Skor diambil langsung dari Google Sheet (CSV publik), diperbarui otomatis.</div>
+    <div class="toplink">Skor diambil langsung dari server (Apps Script), dengan CSV publik sebagai cadangan.</div>
   </div>
 
   <!-- ===================== GAME ===================== -->
@@ -381,9 +383,55 @@ async function api(action, params){
   }
 }
 
+/* Panggilan GET sederhana ke Apps Script (dipakai untuk leaderboard).
+   GET tanpa header custom = "simple request", tidak butuh preflight,
+   dan web app Apps Script yang di-deploy "Anyone" otomatis mengirim
+   header CORS yang dibutuhkan browser untuk membaca responsnya. */
+async function apiGet(action, params){
+  const qs = new URLSearchParams(Object.assign({action}, params||{})).toString();
+  try{
+    const res = await fetch(APP_URL + "?" + qs, { method:"GET" });
+    return await res.json();
+  }catch(err){
+    console.error("API GET error", err);
+    return {error: String(err)};
+  }
+}
+
 /* ============================================================
-   CSV LEADERBOARD (dibaca langsung dari Google Sheet publik)
+   PAPAN SKOR
+   ------------------------------------------------------------
+   Sumber UTAMA: Apps Script (action=leaderboard) — langsung dari
+   sheet "Leaderboard" yang sama dengan yang dipakai `finishGame`,
+   jadi selalu konsisten dan tidak bergantung pada pengaturan
+   "Publish to web" (yang sering salah pilih sheet / gid / belum
+   dipublish / delay cache Google beberapa menit).
+
+   Sumber CADANGAN: CSV publik (CSV_URL) — dipakai hanya jika
+   pemanggilan ke Apps Script gagal (mis. Apps Script sedang
+   redeploy).
    ============================================================ */
+function formatTanggal(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return String(iso).split(' ')[0] || String(iso);
+  return d.toLocaleDateString('id-ID', {day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function renderLeaderboardRows(list){
+  const body = document.getElementById('lbBody');
+  if(!list || list.length === 0){
+    body.innerHTML = '<tr><td colspan="5" class="empty-lb">Belum ada skor tercatat.</td></tr>';
+    return;
+  }
+  body.innerHTML = list.map(r=>{
+    return `<tr><td>${escapeHtml(r.name)}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${escapeHtml(r.code)}</td><td class="res-${escapeHtml(r.hasil)}">${escapeHtml(r.hasil)}</td><td>${escapeHtml(r.menit)}</td><td>${escapeHtml(r.tanggal)}</td></tr>`;
+  }).join("");
+}
+
+/* --- Parser CSV publik (fallback) --- */
 function parseCSV(text){
   const rows=[]; let row=[]; let field=''; let inQuotes=false;
   for(let i=0;i<text.length;i++){
@@ -403,40 +451,63 @@ function parseCSV(text){
   if(field.length || row.length){ row.push(field); rows.push(row); }
   return rows.filter(r => r.length>1 || (r.length===1 && r[0]!==''));
 }
-async function loadLeaderboard(){
-  const body = document.getElementById('lbBody');
-  const note = document.getElementById('lbRefreshNote');
-  try{
-    const sep = CSV_URL.includes('?') ? '&' : '?';
-    const res = await fetch(CSV_URL + sep + 'cb=' + Date.now());
-    const text = await res.text();
-    const rows = parseCSV(text);
-    if(rows.length <= 1){
-      body.innerHTML = '<tr><td colspan="4" class="empty-lb">Belum ada skor tercatat.</td></tr>';
-      return;
-    }
-    const header = rows[0].map(h => (h||'').trim().toLowerCase());
-    const iName = header.indexOf('nama');
-    const iCode = header.indexOf('kode');
-    const iHasil = header.indexOf('hasil');
-    const iMenit = header.indexOf('menit');
-    const iWaktu = header.indexOf('waktu');
-    const data = rows.slice(1).filter(r => r.length > 1 && r[iName]).reverse().slice(0,150);
-    if(data.length === 0){
-      body.innerHTML = '<tr><td colspan="5" class="empty-lb">Belum ada skor tercatat.</td></tr>';
-      return;
-    }
-    body.innerHTML = data.map(r=>{
-      const name = r[iName]||'', code = r[iCode]||'', hasil = (r[iHasil]||'').trim(), menit = r[iMenit]||'', waktu = (r[iWaktu]||'').split(' ')[0] || '';
-      return `<tr><td>${escapeHtml(name)}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${escapeHtml(code)}</td><td class="res-${escapeHtml(hasil)}">${escapeHtml(hasil)}</td><td>${escapeHtml(menit)}</td><td>${escapeHtml(waktu)}</td></tr>`;
-    }).join("");
-    note.textContent = "Diperbarui " + new Date().toLocaleTimeString('id-ID');
-  }catch(e){
-    body.innerHTML = '<tr><td colspan="5" class="empty-lb">Gagal memuat skor. Pastikan link CSV sudah dipublish (File → Share → Publish to web) dari sheet Leaderboard.</td></tr>';
+async function loadLeaderboardFromCSV(){
+  const sep = CSV_URL.includes('?') ? '&' : '?';
+  const res = await fetch(CSV_URL + sep + 'cb=' + Date.now());
+  const text = await res.text();
+  const rows = parseCSV(text);
+  if(rows.length <= 1) return [];
+  const header = rows[0].map(h => (h||'').trim().toLowerCase());
+  const iName = header.indexOf('nama');
+  const iCode = header.indexOf('kode');
+  const iHasil = header.indexOf('hasil');
+  const iMenit = header.indexOf('menit');
+  const iWaktu = header.indexOf('waktu');
+  if(iName === -1 || iHasil === -1){
+    // Header tidak cocok — kemungkinan besar CSV yang terpublish
+    // adalah sheet "Games", bukan "Leaderboard".
+    throw new Error('Header CSV tidak sesuai (sheet yang dipublish mungkin bukan "Leaderboard")');
   }
+  return rows.slice(1)
+    .filter(r => r.length > 1 && r[iName])
+    .reverse()
+    .slice(0,150)
+    .map(r => ({
+      name: r[iName]||'', code: r[iCode]||'', hasil: (r[iHasil]||'').trim(),
+      menit: r[iMenit]||'', tanggal: formatTanggal(r[iWaktu])
+    }));
 }
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+async function loadLeaderboard(){
+  const note = document.getElementById('lbRefreshNote');
+  const tag = document.getElementById('lbSourceTag');
+  document.getElementById('lbBody').innerHTML = '<tr><td colspan="5" class="empty-lb">Memuat…</td></tr>';
+
+  // 1) Coba sumber utama: Apps Script
+  const apiRes = await apiGet('leaderboard', {});
+  if(apiRes && !apiRes.error && Array.isArray(apiRes.rows)){
+    const list = apiRes.rows.map(r => ({
+      name: r.name || '', code: r.code || '', hasil: (r.result||'').toString().trim(),
+      menit: r.minute || '', tanggal: formatTanggal(r.time)
+    }));
+    renderLeaderboardRows(list);
+    note.textContent = "Diperbarui " + new Date().toLocaleTimeString('id-ID');
+    tag.textContent = "Sumber: server (Apps Script)";
+    return;
+  }
+
+  // 2) Fallback: CSV publik
+  try{
+    const list = await loadLeaderboardFromCSV();
+    renderLeaderboardRows(list);
+    note.textContent = "Diperbarui " + new Date().toLocaleTimeString('id-ID');
+    tag.textContent = "Sumber: CSV publik (cadangan)";
+  }catch(e){
+    console.error(e);
+    document.getElementById('lbBody').innerHTML =
+      '<tr><td colspan="5" class="empty-lb">Gagal memuat skor dari server maupun CSV. Cek APP_URL Apps Script (harus versi ter-deploy terbaru) dan/atau pengaturan Publish to web pada sheet "Leaderboard".</td></tr>';
+    tag.textContent = "";
+  }
 }
 loadLeaderboard();
 document.getElementById('lbRefreshBtn').onclick = loadLeaderboard;
