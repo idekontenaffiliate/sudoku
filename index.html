@@ -92,6 +92,17 @@
   .fontctrl button{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:6px 12px;font-family:'JetBrains Mono',monospace;font-weight:800;}
   .fontctrl .fs-label{font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;}
 
+  .remain-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;}
+  .remain-total{font-size:12.5px;color:var(--text-dim);text-align:center;margin-bottom:8px;}
+  .remain-total b{color:var(--blue-dark);font-family:'JetBrains Mono',monospace;font-size:15px;}
+  .remain-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:5px;}
+  .remain-chip{display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--blue-soft);border-radius:8px;padding:5px 0;font-family:'JetBrains Mono',monospace;}
+  .remain-chip .rn{font-size:calc(var(--cell-font) - 6px);font-weight:700;color:var(--blue-dark);}
+  .remain-chip .rc{font-size:calc(var(--cell-font) - 8px);color:var(--text-dim);}
+  .remain-chip.done{background:#e6f9f4;}
+  .remain-chip.done .rn{color:var(--teal);}
+  .remain-chip.done .rc{color:var(--teal);}
+
   .grid-outer{border:3px solid var(--blue);border-radius:8px;display:grid;grid-template-columns:repeat(9,1fr);aspect-ratio:1/1;background:#fff;overflow:hidden;}
   .cell{display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:var(--cell-font);font-weight:600;color:var(--teal);border-right:1px solid #e7e9f2;border-bottom:1px solid #e7e9f2;cursor:pointer;user-select:none;background:#ffffff;}
   .cell.given{color:var(--given);font-weight:800;background:#fafbff;}
@@ -103,7 +114,7 @@
   .cell.samenum{background:var(--highlight);}
 
   .numpad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px;}
-  .numpad button{background:var(--blue);color:#fff;border:none;font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;padding:16px 0;border-radius:12px;}
+  .numpad button{background:var(--blue);color:#fff;border:none;font-family:'JetBrains Mono',monospace;font-size:calc(var(--cell-font) + 2px);font-weight:800;padding:16px 0;border-radius:12px;}
   .numpad button#clearNumBtn{background:#e5e8f2;color:var(--text);}
   .numpad button.tipbtn{grid-column:span 5;background:var(--amber);color:#241a00;font-family:'Inter',sans-serif;font-weight:800;font-size:15px;margin-top:2px;padding:13px 0;}
   .numpad button:active{filter:brightness(0.9);}
@@ -171,11 +182,14 @@
     </div>
 
     <div class="card">
-      <h2>🏆 Papan Skor Teratas</h2>
-      <div class="lb-scroll">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <h2 style="margin:0;">🏆 Papan Skor Teratas</h2>
+        <button class="btn-secondary btn-small" id="lbRefreshBtn">🔄 Refresh</button>
+      </div>
+      <div class="lb-scroll" style="margin-top:10px;">
         <table>
-          <thead><tr><th>Nama</th><th>Kode</th><th>Hasil</th><th>Menit</th></tr></thead>
-          <tbody id="lbBody"><tr><td colspan="4" class="empty-lb">Memuat…</td></tr></tbody>
+          <thead><tr><th>Nama</th><th>Kode</th><th>Hasil</th><th>Menit</th><th>Tanggal</th></tr></thead>
+          <tbody id="lbBody"><tr><td colspan="5" class="empty-lb">Memuat…</td></tr></tbody>
         </table>
       </div>
       <div class="lb-refresh-note" id="lbRefreshNote"></div>
@@ -201,6 +215,11 @@
       <button id="fontMinus">A−</button>
       <span class="fs-label" id="fontSizeLabel">20px</span>
       <button id="fontPlus">A+</button>
+    </div>
+
+    <div class="remain-panel">
+      <div class="remain-total">Sisa: <b id="remainTotal">64</b> / 81 kotak belum terisi</div>
+      <div class="remain-grid" id="remainGrid"></div>
     </div>
 
     <div class="grid-outer" id="grid"></div>
@@ -243,6 +262,7 @@
    ============================================================ */
 const APP_URL = "https://script.google.com/macros/s/AKfycbzpVgw2hJiAqfpBJMhehelYqgLLCo4-RDk1QL9MpjNIMyXOtCCYHiGZDhAl_7m5SYe8/exec";
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNDewaXc-SAqAmkU7x8UNoAqWNYJV_qH4gmIu_CrTwrLMjUMhmDOzmRPn-5zYsVwl4TtMoW6Bwvi7P/pub?output=csv";
+  
 const SEED_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const GAME_MINUTES = 20;
 const POLL_MS = 3000;
@@ -400,24 +420,26 @@ async function loadLeaderboard(){
     const iCode = header.indexOf('kode');
     const iHasil = header.indexOf('hasil');
     const iMenit = header.indexOf('menit');
+    const iWaktu = header.indexOf('waktu');
     const data = rows.slice(1).filter(r => r.length > 1 && r[iName]).reverse().slice(0,150);
     if(data.length === 0){
-      body.innerHTML = '<tr><td colspan="4" class="empty-lb">Belum ada skor tercatat.</td></tr>';
+      body.innerHTML = '<tr><td colspan="5" class="empty-lb">Belum ada skor tercatat.</td></tr>';
       return;
     }
     body.innerHTML = data.map(r=>{
-      const name = r[iName]||'', code = r[iCode]||'', hasil = (r[iHasil]||'').trim(), menit = r[iMenit]||'';
-      return `<tr><td>${escapeHtml(name)}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${escapeHtml(code)}</td><td class="res-${escapeHtml(hasil)}">${escapeHtml(hasil)}</td><td>${escapeHtml(menit)}</td></tr>`;
+      const name = r[iName]||'', code = r[iCode]||'', hasil = (r[iHasil]||'').trim(), menit = r[iMenit]||'', waktu = (r[iWaktu]||'').split(' ')[0] || '';
+      return `<tr><td>${escapeHtml(name)}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${escapeHtml(code)}</td><td class="res-${escapeHtml(hasil)}">${escapeHtml(hasil)}</td><td>${escapeHtml(menit)}</td><td>${escapeHtml(waktu)}</td></tr>`;
     }).join("");
     note.textContent = "Diperbarui " + new Date().toLocaleTimeString('id-ID');
   }catch(e){
-    body.innerHTML = '<tr><td colspan="4" class="empty-lb">Gagal memuat skor. Pastikan link CSV sudah dipublish (File → Share → Publish to web) dari sheet Leaderboard.</td></tr>';
+    body.innerHTML = '<tr><td colspan="5" class="empty-lb">Gagal memuat skor. Pastikan link CSV sudah dipublish (File → Share → Publish to web) dari sheet Leaderboard.</td></tr>';
   }
 }
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 loadLeaderboard();
+document.getElementById('lbRefreshBtn').onclick = loadLeaderboard;
 setInterval(()=>{ if(document.getElementById('lobbyScreen').style.display !== 'none') loadLeaderboard(); }, 10000);
 
 /* ============================================================
@@ -620,6 +642,26 @@ function buildGrid(){
       grid.appendChild(cell);
     }
   }
+  renderRemaining();
+}
+function renderRemaining(){
+  let totalRemaining = 0;
+  const perNumber = Array(10).fill(0);
+  for(let i=0;i<81;i++){
+    if(!state.locked[i]){
+      totalRemaining++;
+      perNumber[state.solution[i]]++;
+    }
+  }
+  document.getElementById('remainTotal').textContent = totalRemaining;
+  const grid = document.getElementById('remainGrid');
+  grid.innerHTML = '';
+  for(let n=1;n<=9;n++){
+    const chip = document.createElement('div');
+    chip.className = 'remain-chip' + (perNumber[n]===0 ? ' done' : '');
+    chip.innerHTML = `<span class="rn">${n}</span><span class="rc">${perNumber[n]}</span>`;
+    grid.appendChild(chip);
+  }
 }
 function clearHighlights(){
   document.querySelectorAll('.cell.samenum').forEach(el=>el.classList.remove('samenum'));
@@ -665,6 +707,7 @@ function placeNumber(i, n){
     cellEl.classList.remove('selected','wrong');
     cellEl.onclick = ()=> highlightSame(state.entries[i]);
     highlightSame(n);
+    renderRemaining();
     checkWin();
   } else {
     state.mistakes++;
