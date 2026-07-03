@@ -82,6 +82,7 @@
   .flagtag img{width:16px;height:12px;border-radius:2px;object-fit:cover;flex-shrink:0;}
   .flagtag .cc{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-dim);}
   .lb-waktu{cursor:help;border-bottom:1px dashed var(--text-dim);}
+  .lb-flag{cursor:help;border-bottom:1px dashed var(--text-dim);}
 
   #gameScreen{display:none;}
   .gamebar{display:flex;align-items:center;justify-content:space-between;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;gap:8px;}
@@ -103,27 +104,18 @@
   .roster-row{display:flex;align-items:center;gap:6px;background:var(--blue-soft);border-radius:8px;padding:6px 8px;font-size:12px;}
   .roster-row.me{outline:1.5px solid var(--blue);}
   .roster-row img{width:17px;height:13px;border-radius:2px;flex-shrink:0;}
+  .rcc-wrap{display:inline-flex;align-items:center;gap:4px;cursor:help;flex-shrink:0;}
   .roster-row .rcc{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);flex-shrink:0;}
   .roster-row .rname{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
   .roster-row .rmistake{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--red);flex-shrink:0;}
   .roster-row .rstatus{flex-shrink:0;}
+  .roster-row .rbonus{flex-shrink:0;font-size:11px;}
   .refresh-btn{background:none;border:1px solid var(--line);border-radius:6px;padding:2px 7px;font-size:11px;color:var(--blue);}
   .sync-note{font-size:10px;color:var(--text-dim);text-align:center;margin-bottom:10px;}
 
   .fontctrl{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;}
   .fontctrl button{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:6px 12px;font-family:'JetBrains Mono',monospace;font-weight:800;}
   .fontctrl .fs-label{font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;}
-
-  .remain-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;}
-  .remain-total{font-size:12.5px;color:var(--text-dim);text-align:center;margin-bottom:8px;}
-  .remain-total b{color:var(--blue-dark);font-family:'JetBrains Mono',monospace;font-size:15px;}
-  .remain-grid{display:grid;grid-template-columns:repeat(9,1fr);gap:5px;}
-  .remain-chip{display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--blue-soft);border-radius:8px;padding:5px 0;font-family:'JetBrains Mono',monospace;}
-  .remain-chip .rn{font-size:calc(var(--cell-font) - 6px);font-weight:700;color:var(--blue-dark);}
-  .remain-chip .rc{font-size:calc(var(--cell-font) - 8px);color:var(--text-dim);}
-  .remain-chip.done{background:#e6f9f4;}
-  .remain-chip.done .rn{color:var(--teal);}
-  .remain-chip.done .rc{color:var(--teal);}
 
   .grid-outer{border:3px solid var(--blue);border-radius:8px;display:grid;grid-template-columns:repeat(9,1fr);aspect-ratio:1/1;background:var(--panel);overflow:hidden;}
   .cell{display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:var(--cell-font);font-weight:600;color:var(--teal);border-right:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;user-select:none;background:var(--panel);}
@@ -134,12 +126,26 @@
   .cell.wrong{background:rgba(229,83,75,0.25);color:var(--red);}
   .cell.hinted{color:var(--amber);}
   .cell.samenum{background:var(--highlight);}
+  .cell.notes{cursor:pointer;}
+  .notegrid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);width:100%;height:100%;padding:2px;}
+  .note-n{font-family:'JetBrains Mono',monospace;font-size:calc(var(--cell-font) - 11px);color:var(--text-dim);display:flex;align-items:center;justify-content:center;}
 
-  .numpad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px;}
-  .numpad button{background:var(--blue);color:#fff;border:none;font-family:'JetBrains Mono',monospace;font-size:calc(var(--cell-font) + 2px);font-weight:800;padding:16px 0;border-radius:12px;}
-  .numpad button#clearNumBtn{background:#e5e8f2;color:var(--text);}
-  .numpad button.tipbtn{grid-column:span 5;background:var(--amber);color:#241a00;font-family:'Inter',sans-serif;font-weight:800;font-size:15px;margin-top:2px;padding:13px 0;}
-  .numpad button:active{filter:brightness(0.9);}
+  .toolrow{display:flex;gap:8px;margin-top:14px;}
+  .tool-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:#eef1f8;color:var(--text);border:1px solid var(--line);padding:10px 0;border-radius:12px;font-size:11px;font-weight:600;}
+  .tool-btn .ic{font-size:18px;line-height:1;}
+  .tool-btn.active{background:var(--amber);color:#241a00;border-color:var(--amber);}
+
+  .numpad{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .numbtn{flex:1 1 calc(20% - 8px);min-width:50px;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:9px 0;display:flex;flex-direction:column;align-items:center;gap:1px;}
+  .numbtn:active{filter:brightness(0.9);}
+  .nb-num{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:calc(var(--cell-font) + 2px);}
+  .nb-count{font-family:'JetBrains Mono',monospace;font-size:10.5px;opacity:.85;}
+  .numpad .tipbtn{flex-basis:100%;background:var(--amber);color:#241a00;font-family:'Inter',sans-serif;font-weight:800;font-size:15px;padding:13px 0;border-radius:12px;margin-top:2px;}
+
+  .toast-box{position:fixed;left:0;right:0;bottom:14px;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:120;pointer-events:none;}
+  .toast-item{background:#181b27;color:#fff;font-size:12px;padding:8px 14px;border-radius:20px;box-shadow:0 4px 14px rgba(0,0,0,.25);max-width:86%;text-align:center;}
+
+  .custom-tooltip{position:absolute;z-index:200;background:#181b27;color:#fff;font-size:11px;line-height:1.4;padding:7px 9px;border-radius:7px;max-width:220px;box-shadow:0 4px 14px rgba(0,0,0,.28);white-space:pre-line;}
 
   .overlay{position:fixed;inset:0;background:rgba(20,24,38,0.45);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
   .overlay.show{display:flex;}
@@ -165,7 +171,7 @@
   <header class="top">
     <div>
       <div class="eyebrow">Duel Angka · Sampai 10 Pemain</div>
-      <div class="brand">SUDOKU 11.17<span>:VAULT</span></div>
+      <div class="brand">SUDOKU 11.58<span>:VAULT</span></div>
     </div>
     <div class="btnrow">
       <button id="themeBtn" class="btn-secondary btn-small" title="Ganti tema warna">🎨</button>
@@ -196,7 +202,7 @@
 
       <div id="genCodeResult" style="display:none;">
         <div class="code-display" id="codeSegments"></div>
-        <div class="code-hint">6 digit acak + 2 digit sel-terbuka + 2 digit kesalahan + 2 digit tips = 12 digit. Bagikan kode ini ke sampai 9 teman lain (maksimal 10 pemain per kode).</div>
+        <div class="code-hint">6 digit acak + 2 digit sel-terbuka + 2 digit kesalahan + 2 digit tips = 12 digit. Bagikan kode ini ke sampai 9 teman lain (maksimal 10 pemain per kode). Jika kamar terisi penuh 10 pemain, 5 pemain akan dipilih acak oleh server untuk mendapat kesempatan bonus isi-otomatis.</div>
         <div class="copyrow">
           <button class="btn-secondary" id="copyCodeBtn" style="flex:1;">Salin Kode</button>
           <button class="btn-primary" id="startAsABtn" style="flex:1;margin-top:0;">Mulai Main</button>
@@ -228,7 +234,7 @@
       <div class="lb-source-tag" id="lbSourceTag"></div>
     </div>
 
-    <div class="toplink">Skor & status pemain diambil langsung dari server (Apps Script). Negara dideteksi dari IP Anda saat bergabung. Arahkan/tekan kolom Waktu untuk melihat tanggal & jam selesainya.</div>
+    <div class="toplink">Skor & status pemain diambil langsung dari server (Apps Script), otomatis tiap 1 menit — tekan 🔄 untuk refresh manual kapan saja. Negara dideteksi dari IP Anda saat bergabung. Tekan-lama (HP) atau arahkan kursor (desktop) pada nama negara / kolom Waktu untuk melihat kota, kabupaten, provinsi dan jam-tanggal lengkapnya.</div>
   </div>
 
   <!-- ===================== GAME ===================== -->
@@ -263,18 +269,14 @@
       <button id="fontPlus">A+</button>
     </div>
 
-    <div class="remain-panel" id="remainPanel">
-      <div class="remain-total">Sisa: <b id="remainTotal">64</b> / 81 kotak belum terisi</div>
-      <div class="remain-grid" id="remainGrid"></div>
-    </div>
-
     <div class="grid-outer" id="grid"></div>
 
-    <div class="numpad" id="numpad">
-      <button data-n="1">1</button><button data-n="2">2</button><button data-n="3">3</button><button data-n="4">4</button><button data-n="5">5</button>
-      <button data-n="6">6</button><button data-n="7">7</button><button data-n="8">8</button><button data-n="9">9</button><button data-n="0" id="clearNumBtn">✕</button>
-      <button class="tipbtn" id="hintBtn">Gunakan Tips</button>
+    <div class="toolrow" id="toolRow">
+      <button class="tool-btn" id="undoBtn"><span class="ic">↺</span><span>Mengembalikan</span></button>
+      <button class="tool-btn" id="eraseBtn"><span class="ic">⌫</span><span>Hapus</span></button>
+      <button class="tool-btn" id="pencilBtn"><span class="ic">✏️</span><span id="pencilLabel">Pensil OFF</span></button>
     </div>
+    <div class="numpad" id="numpad"></div>
   </div>
 
 </div>
@@ -306,16 +308,24 @@
 /* ============================================================
    KONFIGURASI
    ============================================================ */
-const APP_URL = "https://script.google.com/macros/s/AKfycbx-zyB-kkN19OrTPmA3XWXLa57Z5C5PLfaio1NV2gGXTCtHzHqvAClABnc_EnUjICPp/exec";
+const APP_URL = "https://script.google.com/macros/s/AKfycbyKBgNEAA10PNrQxWJkY39d2LOpw5gtaUsZonVSSorM3jzlzsqCWMBOBcBq-4LiqcEE/exec";
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNDewaXc-SAqAmkU7x8UNoAqWNYJV_qH4gmIu_CrTwrLMjUMhmDOzmRPn-5zYsVwl4TtMoW6Bwvi7P/pub?output=csv";
 
 const SEED_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const GAME_MINUTES = 20; // batas aman stopwatch (jika belum selesai, dianggap Seri)
-const POLL_MS = 3000;
-// Backend (Code.gs) kini benar-benar mendukung sampai MAX_ROOM_PLAYERS pemain
-// per kode (1 baris per pemain di sheet "Players"). Pemain ke-11 akan ditolak
-// dengan pesan "kamar penuh".
+// Auto-refresh status/roster & papan skor sekarang diperlambat jadi 1 menit
+// sekali supaya lebih hemat kuota Apps Script. Pemain tetap bisa menekan
+// tombol refresh manual (🔄) kapan saja untuk update seketika.
+const POLL_MS = 60000;
+const LB_AUTO_MS = 60000;
 const MAX_ROOM_PLAYERS = 10;
+// Jumlah pemain yang mendapat kesempatan "bonus isi-otomatis" saat kamar
+// terisi penuh 10 pemain (dipilih acak oleh server / Apps Script).
+const BONUS_PLAYER_COUNT = 5;
+// Ambang jumlah kotak terisi (dari 81) supaya bonus otomatis memicu —
+// begitu pemain bonus mengisi sampai kotak ke-76, 5 kotak sisanya
+// langsung terisi otomatis oleh sistem.
+const BONUS_FILL_THRESHOLD = 76;
 
 /* ID unik per perangkat/tab — dipakai backend untuk membedakan pemain,
    supaya TIDAK bergantung pada nama (mencegah bug saat dua HP pakai nama sama). */
@@ -323,8 +333,9 @@ function genDeviceId(){ return 'd' + Math.random().toString(36).slice(2) + Date.
 const DEVICE_ID = genDeviceId();
 
 /* ============================================================
-   DETEKSI NEGARA DARI IP (dilakukan di browser, bukan di Apps Script,
-   karena Apps Script tidak bisa membaca IP pengunjung web app)
+   DETEKSI NEGARA + KOTA/PROVINSI DARI IP (dilakukan di browser, bukan
+   di Apps Script, karena Apps Script tidak bisa membaca IP pengunjung
+   web app). Kota/kabupaten & provinsi hanya dipakai untuk tooltip.
    ============================================================ */
 const ALPHA3 = {
   AD:'AND',AE:'ARE',AF:'AFG',AG:'ATG',AI:'AIA',AL:'ALB',AM:'ARM',AO:'AGO',AR:'ARG',AT:'AUT',
@@ -348,7 +359,7 @@ const ALPHA3 = {
   TW:'TWN',TZ:'TZA',UA:'UKR',UG:'UGA',US:'USA',UY:'URY',UZ:'UZB',VA:'VAT',VC:'VCT',VE:'VEN',
   VN:'VNM',VU:'VUT',WS:'WSM',YE:'YEM',ZA:'ZAF',ZM:'ZMB',ZW:'ZWE'
 };
-let myCountry = { country:'Tidak diketahui', cc2:'', cc3:'???' };
+let myCountry = { country:'Tidak diketahui', cc2:'', cc3:'???', city:'', region:'' };
 async function detectCountry(){
   try{
     const res = await fetch('https://ipwho.is/');
@@ -357,7 +368,9 @@ async function detectCountry(){
       myCountry = {
         country: j.country || 'Tidak diketahui',
         cc2: j.country_code,
-        cc3: ALPHA3[j.country_code] || (j.country_code + 'X')
+        cc3: ALPHA3[j.country_code] || (j.country_code + 'X'),
+        city: j.city || '',
+        region: j.region || ''
       };
     }
   }catch(e){
@@ -375,6 +388,55 @@ function flagImgHtml(cc2){
   return `<img src="https://flagcdn.com/24x18/${cc2.toLowerCase()}.png" style="width:16px;height:12px;border-radius:2px;vertical-align:-2px;" onerror="this.style.display='none'">`;
 }
 detectCountry();
+
+/* ============================================================
+   TOOLTIP RINGAN (hover di desktop, tekan-lama di HP) — dipakai untuk
+   menampilkan kota/kabupaten/provinsi/negara + jam-tanggal.
+   ============================================================ */
+let __tooltipEl = null;
+function hideCustomTooltip(){
+  if(__tooltipEl){ __tooltipEl.remove(); __tooltipEl = null; }
+}
+function showCustomTooltip(el, text){
+  hideCustomTooltip();
+  if(!text) return;
+  __tooltipEl = document.createElement('div');
+  __tooltipEl.className = 'custom-tooltip';
+  __tooltipEl.textContent = text;
+  document.body.appendChild(__tooltipEl);
+  const r = el.getBoundingClientRect();
+  const top = r.bottom + window.scrollY + 6;
+  let left = r.left + window.scrollX;
+  left = Math.max(6, Math.min(left, window.innerWidth - 230));
+  __tooltipEl.style.top = top + 'px';
+  __tooltipEl.style.left = left + 'px';
+}
+function attachTooltip(el, text){
+  if(!el || !text) return;
+  let pressTimer = null;
+  el.addEventListener('mouseenter', ()=> showCustomTooltip(el, text));
+  el.addEventListener('mouseleave', hideCustomTooltip);
+  el.addEventListener('touchstart', ()=>{
+    pressTimer = setTimeout(()=> showCustomTooltip(el, text), 450);
+  }, {passive:true});
+  el.addEventListener('touchend', ()=>{
+    clearTimeout(pressTimer);
+    setTimeout(hideCustomTooltip, 2500);
+  });
+  el.addEventListener('touchmove', ()=> clearTimeout(pressTimer));
+}
+function locationTooltip(city, region, country, whenISO, whenLabel){
+  const parts = [];
+  if(city) parts.push(city);
+  if(region) parts.push(region);
+  if(country) parts.push(country);
+  const loc = parts.length ? parts.join(', ') : 'Lokasi tidak diketahui';
+  let out = loc;
+  if(whenISO){
+    out = (whenLabel || 'Waktu') + ': ' + formatDateTime(whenISO) + '\n' + loc;
+  }
+  return out;
+}
 
 /* ============================================================
    PRNG DETERMINISTIK DARI SEED STRING
@@ -521,12 +583,21 @@ function renderLeaderboardRows(list){
     body.innerHTML = '<tr><td colspan="5" class="empty-lb">Belum ada skor tercatat.</td></tr>';
     return;
   }
-  body.innerHTML = list.map(r=>{
-    const flag = r.cc2 ? `<span class="flagtag">${flagImgHtml(r.cc2)}<span class="cc">${escapeHtml(r.cc3||'')}</span></span>` : `<span class="cc" style="font-family:'JetBrains Mono',monospace;color:var(--text-dim);">${escapeHtml(r.cc3||'-')}</span>`;
+  body.innerHTML = list.map((r,ix)=>{
+    const locTip = locationTooltip(r.city, r.region, r.country, null, null);
+    const flag = r.cc2
+      ? `<span class="flagtag lb-flag" data-tipix="${ix}">${flagImgHtml(r.cc2)}<span class="cc">${escapeHtml(r.cc3||'')}</span></span>`
+      : `<span class="cc lb-flag" data-tipix="${ix}" style="font-family:'JetBrains Mono',monospace;color:var(--text-dim);">${escapeHtml(r.cc3||'-')}</span>`;
     const waktuLabel = fmtMMSS(Number(r.waktu)||0);
     const tip = escapeHtml('Selesai pada ' + formatDateTime(r.tanggal));
     return `<tr><td>${escapeHtml(r.name)}</td><td>${flag}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${escapeHtml(r.code)}</td><td class="res-${escapeHtml(r.hasil)}">${escapeHtml(r.hasil)}</td><td class="lb-waktu" title="${tip}">${waktuLabel}</td></tr>`;
   }).join("");
+  body.querySelectorAll('.lb-flag').forEach(el=>{
+    const ix = parseInt(el.dataset.tipix,10);
+    const r = list[ix];
+    if(!r) return;
+    attachTooltip(el, locationTooltip(r.city, r.region, r.country, r.tanggal, 'Selesai'));
+  });
 }
 function parseCSV(text){
   const rows=[]; let row=[]; let field=''; let inQuotes=false;
@@ -561,6 +632,9 @@ async function loadLeaderboardFromCSV(){
   const iCC2 = header.indexOf('cc2');
   const iCC3 = header.indexOf('cc3');
   const iTanggal = header.indexOf('tanggal');
+  const iNegara = header.indexOf('negara');
+  const iKota = header.indexOf('kota');
+  const iProvinsi = header.indexOf('provinsi');
   if(iName === -1 || iHasil === -1){
     throw new Error('Header CSV tidak sesuai (sheet yang dipublish mungkin bukan "Leaderboard")');
   }
@@ -571,7 +645,8 @@ async function loadLeaderboardFromCSV(){
     .map(r => ({
       name: r[iName]||'', code: r[iCode]||'', hasil: (r[iHasil]||'').trim(),
       waktu: iWaktu>-1 ? r[iWaktu] : '0', tanggal: iTanggal>-1 ? r[iTanggal] : '',
-      cc2: iCC2>-1 ? r[iCC2] : '', cc3: iCC3>-1 ? r[iCC3] : ''
+      cc2: iCC2>-1 ? r[iCC2] : '', cc3: iCC3>-1 ? r[iCC3] : '',
+      country: iNegara>-1 ? r[iNegara] : '', city: iKota>-1 ? r[iKota] : '', region: iProvinsi>-1 ? r[iProvinsi] : ''
     }));
 }
 async function loadLeaderboard(){
@@ -583,7 +658,8 @@ async function loadLeaderboard(){
   if(apiRes && !apiRes.error && Array.isArray(apiRes.rows)){
     const list = apiRes.rows.map(r => ({
       name: r.name || '', code: r.code || '', hasil: (r.result||'').toString().trim(),
-      waktu: r.waktu || 0, tanggal: r.tanggal || '', cc2: r.cc2 || '', cc3: r.cc3 || ''
+      waktu: r.waktu || 0, tanggal: r.tanggal || '', cc2: r.cc2 || '', cc3: r.cc3 || '',
+      country: r.country || '', city: r.city || '', region: r.region || ''
     }));
     renderLeaderboardRows(list);
     note.textContent = "Diperbarui " + new Date().toLocaleTimeString('id-ID');
@@ -605,7 +681,9 @@ async function loadLeaderboard(){
 }
 loadLeaderboard();
 document.getElementById('lbRefreshBtn').onclick = loadLeaderboard;
-setInterval(()=>{ if(document.getElementById('lobbyScreen').style.display !== 'none') loadLeaderboard(); }, 10000);
+// Auto-refresh papan skor di lobby: 1 menit sekali saja (tombol 🔄 tetap
+// tersedia untuk refresh manual kapan pun dibutuhkan).
+setInterval(()=>{ if(document.getElementById('lobbyScreen').style.display !== 'none') loadLeaderboard(); }, LB_AUTO_MS);
 
 /* ============================================================
    TEMA WARNA (5 pilihan)
@@ -786,6 +864,24 @@ document.getElementById('joinBtn').onclick = ()=>{
 };
 
 /* ============================================================
+   TOAST NOTIFIKASI (mis. lawan melakukan kesalahan)
+   ============================================================ */
+function showToast(msg){
+  let box = document.getElementById('toastBox');
+  if(!box){
+    box = document.createElement('div');
+    box.id = 'toastBox';
+    box.className = 'toast-box';
+    document.body.appendChild(box);
+  }
+  const item = document.createElement('div');
+  item.className = 'toast-item';
+  item.textContent = msg;
+  box.appendChild(item);
+  setTimeout(()=>{ item.remove(); }, 4000);
+}
+
+/* ============================================================
    MASUK KE GAME
    ============================================================ */
 async function enterGame(code, name){
@@ -795,7 +891,8 @@ async function enterGame(code, name){
 
   const joinRes = await api('join', {
     code: parsed.code, name, deviceId: DEVICE_ID,
-    country: myCountry.country, cc2: myCountry.cc2, cc3: myCountry.cc3
+    country: myCountry.country, cc2: myCountry.cc2, cc3: myCountry.cc3,
+    city: myCountry.city, region: myCountry.region
   });
 
   if(!joinRes || joinRes.error === 'full'){
@@ -811,12 +908,23 @@ async function enterGame(code, name){
   const locked = Array(81).fill(false);
   for(const i of givenSet){ entries[i] = solution[i]; locked[i] = true; }
 
+  const joinedPlayers = joinRes.players || [];
+  const mine = joinedPlayers.find(p=>p.deviceId===DEVICE_ID);
+  const lastMistakes = {};
+  joinedPlayers.forEach(p=>{ lastMistakes[p.deviceId] = p.mistakes || 0; });
+
   state = {
     code: parsed.code,
     maxMistake: parsed.maxMistake,
     hintsLeft: parsed.hints,
     name,
     solution, entries, locked,
+    notes: Array(81).fill(null).map(()=> new Set()),
+    wrong: Array(81).fill(false),
+    history: [],
+    pencilMode: false,
+    myBonus: !!(mine && mine.bonus),
+    lastMistakes,
     mistakes: 0,
     selected: null,
     startedAt: Date.now(),
@@ -832,7 +940,12 @@ async function enterGame(code, name){
   document.getElementById('mistakeVal').textContent = `0/${state.maxMistake}`;
   document.getElementById('hintVal').textContent = state.hintsLeft;
   document.getElementById('timerVal').classList.remove('warn');
-  renderRoster(joinRes.players || []);
+  document.getElementById('mistakeVal').classList.remove('warn');
+  document.getElementById('numpad').style.display = '';
+  document.getElementById('toolRow').style.display = '';
+  document.getElementById('pencilBtn').classList.remove('active');
+  document.getElementById('pencilLabel').textContent = 'Pensil OFF';
+  renderRoster(joinedPlayers);
 
   cellFontSize = window.innerWidth < 380 ? 16 : 20;
   applyFontSize();
@@ -868,43 +981,75 @@ function buildGrid(){
       if(c===2||c===5) cell.classList.add('br');
       if(r===2||r===5) cell.classList.add('bb');
       cell.dataset.i = i;
-      if(state.locked[i]){
-        cell.classList.add('given');
-        cell.textContent = state.entries[i];
-        cell.onclick = ()=> highlightSame(state.entries[i]);
-      } else {
-        cell.textContent = '';
-        cell.onclick = ()=> selectCell(i);
-      }
       grid.appendChild(cell);
+      renderCellDisplay(i);
     }
   }
-  renderRemaining();
+  grid.onclick = (e)=>{
+    const el = e.target.closest('.cell');
+    if(!el || state.finished) return;
+    const i = parseInt(el.dataset.i,10);
+    if(state.locked[i]){ highlightSame(state.entries[i]); return; }
+    selectCell(i);
+  };
+  renderNumpad();
 }
-function renderRemaining(){
-  let totalRemaining = 0;
+function renderCellDisplay(i){
+  const el = document.querySelector(`.cell[data-i="${i}"]`);
+  if(!el) return;
+  const wasSelected = el.classList.contains('selected');
+  const wasSame = el.classList.contains('samenum');
+  el.className = 'cell';
+  const r = Math.floor(i/9), c = i%9;
+  if(c===2||c===5) el.classList.add('br');
+  if(r===2||r===5) el.classList.add('bb');
+  if(wasSelected) el.classList.add('selected');
+  if(wasSame) el.classList.add('samenum');
+
+  if(state.locked[i]){
+    el.textContent = state.entries[i];
+    el.classList.add('given');
+    if(el.dataset.hinted === '1') el.classList.add('hinted');
+  } else if(state.wrong[i]){
+    el.textContent = state.entries[i];
+    el.classList.add('wrong');
+  } else if(state.notes[i] && state.notes[i].size>0){
+    el.classList.add('notes');
+    let html = '<div class="notegrid">';
+    for(let n=1;n<=9;n++){ html += `<span class="note-n">${state.notes[i].has(n)?n:''}</span>`; }
+    html += '</div>';
+    el.innerHTML = html;
+  } else {
+    el.textContent = '';
+  }
+}
+function renderNumpad(){
+  const pad = document.getElementById('numpad');
   const perNumber = Array(10).fill(0);
+  let totalRemaining = 0;
   for(let i=0;i<81;i++){
-    if(!state.locked[i]){
-      totalRemaining++;
-      perNumber[state.solution[i]]++;
-    }
+    if(!state.locked[i]){ totalRemaining++; perNumber[state.solution[i]]++; }
   }
-  document.getElementById('remainTotal').textContent = totalRemaining;
-  const panel = document.getElementById('remainPanel');
-  const gridBox = document.getElementById('remainGrid');
-  if(totalRemaining === 0){
-    // Papan sudah penuh — sembunyikan panel angka sisa.
-    panel.style.display = 'none';
-    return;
-  }
-  panel.style.display = 'block';
-  gridBox.innerHTML = '';
+  pad.innerHTML = '';
   for(let n=1;n<=9;n++){
-    const chip = document.createElement('div');
-    chip.className = 'remain-chip' + (perNumber[n]===0 ? ' done' : '');
-    chip.innerHTML = `<span class="rn">${n}</span><span class="rc">${perNumber[n]}</span>`;
-    gridBox.appendChild(chip);
+    if(perNumber[n] === 0) continue; // angka habis -> tombolnya hilang
+    const btn = document.createElement('button');
+    btn.className = 'numbtn';
+    btn.dataset.n = n;
+    btn.innerHTML = `<span class="nb-num">${n}</span><span class="nb-count">${perNumber[n]}</span>`;
+    pad.appendChild(btn);
+  }
+  const tip = document.createElement('button');
+  tip.type = 'button';
+  tip.className = 'tipbtn';
+  tip.id = 'hintBtn';
+  tip.textContent = `Gunakan Tips (${state.hintsLeft})`;
+  tip.onclick = ()=>{ if(!state.finished) useHint(); };
+  pad.appendChild(tip);
+
+  if(totalRemaining === 0){
+    pad.style.display = 'none';
+    document.getElementById('toolRow').style.display = 'none';
   }
 }
 function clearHighlights(){
@@ -928,43 +1073,119 @@ function selectCell(i){
   document.querySelector(`.cell[data-i="${i}"]`).classList.add('selected');
 }
 
+/* Delegated numpad tap handling (angka dibangun ulang tiap render) */
 document.getElementById('numpad').addEventListener('click', (e)=>{
-  const btn = e.target.closest('button[data-n]');
+  const btn = e.target.closest('.numbtn');
   if(!btn || state.finished) return;
-  const n = parseInt(btn.dataset.n,10);
-  if(n===0){ state.selected=null; document.querySelectorAll('.cell').forEach(el=>el.classList.remove('selected')); return; }
-  if(state.selected===null) return;
-  placeNumber(state.selected, n);
+  onNumpadTap(parseInt(btn.dataset.n,10));
 });
-document.getElementById('hintBtn').onclick = ()=>{
-  if(state.finished) return;
-  useHint();
+document.getElementById('pencilBtn').onclick = ()=>{
+  if(!state || state.finished) return;
+  state.pencilMode = !state.pencilMode;
+  document.getElementById('pencilBtn').classList.toggle('active', state.pencilMode);
+  document.getElementById('pencilLabel').textContent = state.pencilMode ? 'Pensil ON' : 'Pensil OFF';
 };
+document.getElementById('eraseBtn').onclick = ()=>{ eraseSelected(); };
+document.getElementById('undoBtn').onclick = ()=>{ undoLast(); };
 
-function placeNumber(i, n){
-  const cellEl = document.querySelector(`.cell[data-i="${i}"]`);
+function onNumpadTap(n){
+  if(state.selected===null) return;
+  const i = state.selected;
+  if(state.locked[i]) return;
+  if(state.pencilMode){
+    toggleNote(i, n);
+    return;
+  }
+  commitNumber(i, n);
+}
+
+function pushHistory(action){
+  state.history.push(action);
+  if(state.history.length > 100) state.history.shift();
+}
+
+function toggleNote(i, n){
+  if(!state.notes[i]) state.notes[i] = new Set();
+  const had = state.notes[i].has(n);
+  pushHistory({type:'note', i, n, had});
+  if(had) state.notes[i].delete(n); else state.notes[i].add(n);
+  renderCellDisplay(i);
+}
+
+function commitNumber(i, n){
   if(n === state.solution[i]){
+    pushHistory({type:'place', i, prevNotes: state.notes[i] ? new Set(state.notes[i]) : new Set()});
     state.entries[i] = n;
     state.locked[i] = true;
-    cellEl.textContent = n;
-    cellEl.classList.add('given');
-    cellEl.classList.remove('selected','wrong');
-    cellEl.onclick = ()=> highlightSame(state.entries[i]);
+    state.wrong[i] = false;
+    state.notes[i] = new Set();
+    renderCellDisplay(i);
     highlightSame(n);
-    renderRemaining();
-    checkWin();
+    renderNumpad();
+    afterFillCheck();
   } else {
+    pushHistory({type:'wrong', i});
+    state.entries[i] = n;
+    state.wrong[i] = true;
     state.mistakes++;
     document.getElementById('mistakeVal').textContent = `${state.mistakes}/${state.maxMistake}`;
     if(state.maxMistake>0 && state.mistakes > Math.floor(state.maxMistake*0.7)) document.getElementById('mistakeVal').classList.add('warn');
-    cellEl.textContent = n;
-    cellEl.classList.add('wrong');
-    setTimeout(()=>{ cellEl.textContent=''; cellEl.classList.remove('wrong'); }, 500);
+    renderCellDisplay(i);
     api('update', {code: state.code, deviceId: DEVICE_ID, mistakes: state.mistakes});
     if(state.mistakes > state.maxMistake){
       endGame('Kalah', 'Jumlah kesalahan melebihi batas.');
     }
   }
+}
+
+function eraseSelected(){
+  if(!state || state.finished) return;
+  const i = state.selected;
+  if(i===null) return;
+  if(state.locked[i]) return; // jawaban benar tidak boleh dihapus, hanya bisa lewat Undo
+  const hasWrong = state.wrong[i];
+  const hasNotes = state.notes[i] && state.notes[i].size>0;
+  if(!hasWrong && !hasNotes) return;
+  pushHistory({
+    type:'erase', i,
+    prevEntry: state.entries[i] || 0,
+    prevWrong: !!hasWrong,
+    prevNotes: hasNotes ? new Set(state.notes[i]) : new Set()
+  });
+  state.entries[i] = 0;
+  state.wrong[i] = false;
+  state.notes[i] = new Set();
+  renderCellDisplay(i);
+}
+
+function undoLast(){
+  if(!state || state.finished) return;
+  const action = state.history.pop();
+  if(!action) return;
+  const i = action.i;
+  if(action.type === 'place'){
+    state.locked[i] = false;
+    state.entries[i] = 0;
+    state.wrong[i] = false;
+    state.notes[i] = action.prevNotes || new Set();
+    renderNumpad();
+  } else if(action.type === 'wrong'){
+    state.entries[i] = 0;
+    state.wrong[i] = false;
+    if(state.mistakes>0) state.mistakes--;
+    document.getElementById('mistakeVal').textContent = `${state.mistakes}/${state.maxMistake}`;
+    if(!(state.maxMistake>0 && state.mistakes > Math.floor(state.maxMistake*0.7))){
+      document.getElementById('mistakeVal').classList.remove('warn');
+    }
+  } else if(action.type === 'note'){
+    if(!state.notes[i]) state.notes[i] = new Set();
+    if(action.had) state.notes[i].add(action.n); else state.notes[i].delete(action.n);
+  } else if(action.type === 'erase'){
+    state.entries[i] = action.prevEntry;
+    state.wrong[i] = action.prevWrong;
+    state.notes[i] = action.prevNotes || new Set();
+  }
+  renderCellDisplay(i);
 }
 
 function useHint(){
@@ -973,18 +1194,46 @@ function useHint(){
   for(let i=0;i<81;i++){ if(!state.locked[i]) empties.push(i); }
   if(empties.length===0) return;
   const i = empties[Math.floor(Math.random()*empties.length)];
+  pushHistory({type:'place', i, prevNotes: state.notes[i] ? new Set(state.notes[i]) : new Set()});
   state.entries[i] = state.solution[i];
   state.locked[i] = true;
+  state.wrong[i] = false;
+  state.notes[i] = new Set();
   state.hintsLeft--;
   document.getElementById('hintVal').textContent = state.hintsLeft;
   const cellEl = document.querySelector(`.cell[data-i="${i}"]`);
-  cellEl.textContent = state.solution[i];
-  cellEl.classList.add('given','hinted');
-  cellEl.onclick = ()=> highlightSame(state.entries[i]);
-  renderRemaining();
-  checkWin();
+  if(cellEl) cellEl.dataset.hinted = '1';
+  renderCellDisplay(i);
+  renderNumpad();
+  afterFillCheck();
 }
 
+/* ============================================================
+   BONUS ISI-OTOMATIS (untuk 5 pemain terpilih di ruangan 10-orang)
+   ============================================================ */
+function afterFillCheck(){
+  if(state.finished) return;
+  if(state.myBonus){
+    const filledCount = state.locked.filter(Boolean).length;
+    if(filledCount >= BONUS_FILL_THRESHOLD && filledCount < 81){
+      autoCompleteBonus();
+      return;
+    }
+  }
+  checkWin();
+}
+function autoCompleteBonus(){
+  for(let i=0;i<81;i++){
+    if(!state.locked[i]){
+      state.entries[i] = state.solution[i];
+      state.locked[i] = true;
+      state.wrong[i] = false;
+      state.notes[i] = new Set();
+    }
+  }
+  buildGrid();
+  endGame('Menang', `Bonus! ${81-BONUS_FILL_THRESHOLD} kotak terakhir otomatis terisi.`);
+}
 function checkWin(){
   for(let i=0;i<81;i++){ if(!state.locked[i]) return; }
   endGame('Menang', 'Anda berhasil menyelesaikan seluruh kotak dengan benar.');
@@ -1030,16 +1279,23 @@ function renderRoster(players){
   players = players || [];
   document.getElementById('rosterCount').textContent = players.length + '/' + MAX_ROOM_PLAYERS;
   const box = document.getElementById('rosterBox');
-  box.innerHTML = players.map(pl=>{
+  box.innerHTML = players.map((pl,ix)=>{
     const isMe = pl.deviceId === DEVICE_ID;
     const flag = pl.cc2 ? `<img src="https://flagcdn.com/24x18/${pl.cc2.toLowerCase()}.png" onerror="this.style.visibility='hidden'">` : '';
     return `<div class="roster-row${isMe?' me':''}">
-      ${flag}<span class="rcc">${escapeHtml(pl.cc3||'???')}</span>
+      <span class="rcc-wrap" data-tipix="${ix}">${flag}<span class="rcc">${escapeHtml(pl.cc3||'???')}</span></span>
       <span class="rname">${escapeHtml(pl.name)}${isMe?' (Anda)':''}</span>
+      ${pl.bonus ? '<span class="rbonus" title="Berkesempatan bonus isi-otomatis">✨</span>' : ''}
       <span class="rmistake">✕${pl.mistakes||0}</span>
       <span class="rstatus">${statusIcon(pl.status)}</span>
     </div>`;
   }).join('');
+  box.querySelectorAll('.rcc-wrap').forEach(el=>{
+    const ix = parseInt(el.dataset.tipix,10);
+    const pl = players[ix];
+    if(!pl) return;
+    attachTooltip(el, locationTooltip(pl.city, pl.region, pl.country, pl.joinTime, 'Bergabung'));
+  });
 }
 async function pollStatus(){
   if(!state || state.finished) return;
@@ -1050,7 +1306,19 @@ async function pollStatus(){
     return;
   }
   document.getElementById('syncNote').textContent = "Tersinkron " + new Date().toLocaleTimeString('id-ID');
-  renderRoster(res.players || []);
+  const players = res.players || [];
+
+  players.forEach(p=>{
+    const prev = state.lastMistakes[p.deviceId];
+    if(prev !== undefined && (p.mistakes||0) > prev && p.deviceId !== DEVICE_ID){
+      showToast(`❌ ${p.name} melakukan kesalahan (total ${p.mistakes})`);
+    }
+    state.lastMistakes[p.deviceId] = p.mistakes || 0;
+  });
+  const mine = players.find(p=>p.deviceId===DEVICE_ID);
+  if(mine) state.myBonus = !!mine.bonus;
+
+  renderRoster(players);
   if(state.finished) return;
   if(res.winnerName && !state.winnerBannerShown){
     state.winnerBannerShown = true;
@@ -1089,11 +1357,15 @@ function endGame(result, desc){
   clearInterval(state.pollTimer);
   document.getElementById('surrenderBtn').style.display = 'none';
   document.getElementById('winnerBanner').classList.remove('show');
+  document.getElementById('numpad').style.display = 'none';
+  document.getElementById('toolRow').style.display = 'none';
+  hideCustomTooltip();
 
   const seconds = elapsedSeconds();
   api('finish', {
     code: state.code, deviceId: DEVICE_ID, name: state.name, result, seconds,
-    country: myCountry.country, cc2: myCountry.cc2, cc3: myCountry.cc3
+    country: myCountry.country, cc2: myCountry.cc2, cc3: myCountry.cc3,
+    city: myCountry.city, region: myCountry.region
   }).then(res=>{
     let extra = '';
     if(res && !res.error){
