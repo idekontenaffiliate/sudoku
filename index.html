@@ -81,6 +81,7 @@
   .flagtag{display:inline-flex;align-items:center;gap:4px;}
   .flagtag img{width:16px;height:12px;border-radius:2px;object-fit:cover;flex-shrink:0;}
   .flagtag .cc{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text-dim);}
+  .lb-waktu{cursor:help;border-bottom:1px dashed var(--text-dim);}
 
   #gameScreen{display:none;}
   .gamebar{display:flex;align-items:center;justify-content:space-between;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;gap:8px;}
@@ -164,7 +165,7 @@
   <header class="top">
     <div>
       <div class="eyebrow">Duel Angka · Sampai 10 Pemain</div>
-      <div class="brand">SUDOKU 11.01<span>:VAULT</span></div>
+      <div class="brand">SUDOKU 11.14<span>:VAULT</span></div>
     </div>
     <div class="btnrow">
       <button id="themeBtn" class="btn-secondary btn-small" title="Ganti tema warna">🎨</button>
@@ -227,7 +228,7 @@
       <div class="lb-source-tag" id="lbSourceTag"></div>
     </div>
 
-    <div class="toplink">Skor & status pemain diambil langsung dari server (Apps Script). Negara dideteksi dari IP Anda saat bergabung.</div>
+    <div class="toplink">Skor & status pemain diambil langsung dari server (Apps Script). Negara dideteksi dari IP Anda saat bergabung. Arahkan/tekan kolom Waktu untuk melihat tanggal & jam selesainya.</div>
   </div>
 
   <!-- ===================== GAME ===================== -->
@@ -311,6 +312,9 @@ const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNDewaXc-SAqAm
 const SEED_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const GAME_MINUTES = 20; // batas aman stopwatch (jika belum selesai, dianggap Seri)
 const POLL_MS = 3000;
+// Backend (Code.gs) kini benar-benar mendukung sampai MAX_ROOM_PLAYERS pemain
+// per kode (1 baris per pemain di sheet "Players"). Pemain ke-11 akan ditolak
+// dengan pesan "kamar penuh".
 const MAX_ROOM_PLAYERS = 10;
 
 /* ID unik per perangkat/tab — dipakai backend untuk membedakan pemain,
@@ -500,6 +504,14 @@ function formatTanggal(iso){
   if(isNaN(d.getTime())) return String(iso).split(' ')[0] || String(iso);
   return d.toLocaleDateString('id-ID', {day:'2-digit',month:'2-digit',year:'numeric'});
 }
+function formatDateTime(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return String(iso);
+  const tgl = d.toLocaleDateString('id-ID', {day:'2-digit',month:'2-digit',year:'numeric'});
+  const jam = d.toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  return `${tgl} ${jam}`;
+}
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -511,7 +523,9 @@ function renderLeaderboardRows(list){
   }
   body.innerHTML = list.map(r=>{
     const flag = r.cc2 ? `<span class="flagtag">${flagImgHtml(r.cc2)}<span class="cc">${escapeHtml(r.cc3||'')}</span></span>` : `<span class="cc" style="font-family:'JetBrains Mono',monospace;color:var(--text-dim);">${escapeHtml(r.cc3||'-')}</span>`;
-    return `<tr><td>${escapeHtml(r.name)}</td><td>${flag}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${escapeHtml(r.code)}</td><td class="res-${escapeHtml(r.hasil)}">${escapeHtml(r.hasil)}</td><td>${escapeHtml(r.waktu)}</td></tr>`;
+    const waktuLabel = fmtMMSS(Number(r.waktu)||0);
+    const tip = escapeHtml('Selesai pada ' + formatDateTime(r.tanggal));
+    return `<tr><td>${escapeHtml(r.name)}</td><td>${flag}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${escapeHtml(r.code)}</td><td class="res-${escapeHtml(r.hasil)}">${escapeHtml(r.hasil)}</td><td class="lb-waktu" title="${tip}">${waktuLabel}</td></tr>`;
   }).join("");
 }
 function parseCSV(text){
@@ -543,9 +557,10 @@ async function loadLeaderboardFromCSV(){
   const iName = header.indexOf('nama');
   const iCode = header.indexOf('kode');
   const iHasil = header.indexOf('hasil');
-  const iWaktu = header.indexOf('waktu');
+  const iWaktu = header.indexOf('waktudetik');
   const iCC2 = header.indexOf('cc2');
   const iCC3 = header.indexOf('cc3');
+  const iTanggal = header.indexOf('tanggal');
   if(iName === -1 || iHasil === -1){
     throw new Error('Header CSV tidak sesuai (sheet yang dipublish mungkin bukan "Leaderboard")');
   }
@@ -555,7 +570,8 @@ async function loadLeaderboardFromCSV(){
     .slice(0,150)
     .map(r => ({
       name: r[iName]||'', code: r[iCode]||'', hasil: (r[iHasil]||'').trim(),
-      waktu: r[iWaktu]||'', cc2: iCC2>-1 ? r[iCC2] : '', cc3: iCC3>-1 ? r[iCC3] : ''
+      waktu: iWaktu>-1 ? r[iWaktu] : '0', tanggal: iTanggal>-1 ? r[iTanggal] : '',
+      cc2: iCC2>-1 ? r[iCC2] : '', cc3: iCC3>-1 ? r[iCC3] : ''
     }));
 }
 async function loadLeaderboard(){
@@ -567,7 +583,7 @@ async function loadLeaderboard(){
   if(apiRes && !apiRes.error && Array.isArray(apiRes.rows)){
     const list = apiRes.rows.map(r => ({
       name: r.name || '', code: r.code || '', hasil: (r.result||'').toString().trim(),
-      waktu: r.waktu || '', cc2: r.cc2 || '', cc3: r.cc3 || ''
+      waktu: r.waktu || 0, tanggal: r.tanggal || '', cc2: r.cc2 || '', cc3: r.cc3 || ''
     }));
     renderLeaderboardRows(list);
     note.textContent = "Diperbarui " + new Date().toLocaleTimeString('id-ID');
@@ -799,7 +815,7 @@ async function enterGame(code, name){
     code: parsed.code,
     maxMistake: parsed.maxMistake,
     hintsLeft: parsed.hints,
-    name, slot: joinRes.slot,
+    name,
     solution, entries, locked,
     mistakes: 0,
     selected: null,
