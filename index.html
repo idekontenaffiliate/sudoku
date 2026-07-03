@@ -186,7 +186,7 @@
   <header class="top">
     <div>
       <div class="eyebrow">Duel Angka · Sampai 10 Pemain</div>
-      <div class="brand">SUDOKU 13.58<span>:VAULT</span></div>
+      <div class="brand">SUDOKU 13.35<span>:VAULT</span></div>
     </div>
     <div class="btnrow">
       <button id="themeBtn" class="btn-secondary btn-small" title="Ganti tema warna">🎨</button>
@@ -340,7 +340,7 @@
 /* ============================================================
    KONFIGURASI
    ============================================================ */
-const APP_URL = "https://script.google.com/macros/s/AKfycbyKBgNEAA10PNrQxWJkY39d2LOpw5gtaUsZonVSSorM3jzlzsqCWMBOBcBq-4LiqcEE/exec";
+const APP_URL = "https://script.google.com/macros/s/AKfycbyn3cOrBME147tpxhTfpzE37e-5vMAuPDK40Agey2rajPyUeAM9-VOI_j2q8GMqQ-wx/exec";
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNDewaXc-SAqAmkU7x8UNoAqWNYJV_qH4gmIu_CrTwrLMjUMhmDOzmRPn-5zYsVwl4TtMoW6Bwvi7P/pub?output=csv";
 
 const SEED_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -609,6 +609,17 @@ function formatDateTime(iso){
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+// Tingkat kesulitan (nama) dari jumlah sel yang dibuka di awal (reveal).
+function difficultyLabel(reveal){
+  const n = parseInt(reveal, 10);
+  if(!n || isNaN(n)) return '';
+  if(n === 70) return 'Mudah';
+  if(n === 50) return 'Menengah';
+  if(n === 30) return 'Sulit';
+  if(n === 20) return 'Ahli';
+  if(n === 17) return 'Ekstrem';
+  return `Kustom (${n} sel)`;
+}
 function renderLeaderboardRows(list){
   const body = document.getElementById('lbBody');
   if(!list || list.length === 0){
@@ -621,7 +632,8 @@ function renderLeaderboardRows(list){
       ? `<span class="flagtag lb-flag" data-tipix="${ix}">${flagImgHtml(r.cc2)}<span class="cc">${escapeHtml(r.cc3||'')}</span></span>`
       : `<span class="cc lb-flag" data-tipix="${ix}" style="font-family:'JetBrains Mono',monospace;color:var(--text-dim);">${escapeHtml(r.cc3||'-')}</span>`;
     const waktuLabel = fmtMMSS(Number(r.waktu)||0);
-    const tip = escapeHtml('Selesai pada ' + formatDateTime(r.tanggal));
+    const diffLabel = difficultyLabel(r.reveal);
+    const tip = escapeHtml('Selesai pada ' + formatDateTime(r.tanggal) + (diffLabel ? ('\nTingkat: ' + diffLabel) : ''));
     return `<tr><td>${escapeHtml(r.name)}</td><td>${flag}</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${escapeHtml(r.code)}</td><td class="res-${escapeHtml(r.hasil)}">${escapeHtml(r.hasil)}</td><td class="lb-waktu" title="${tip}">${waktuLabel}</td></tr>`;
   }).join("");
   body.querySelectorAll('.lb-flag').forEach(el=>{
@@ -667,6 +679,7 @@ async function loadLeaderboardFromCSV(){
   const iNegara = header.indexOf('negara');
   const iKota = header.indexOf('kota');
   const iProvinsi = header.indexOf('provinsi');
+  const iReveal = header.indexOf('seldibuka');
   if(iName === -1 || iHasil === -1){
     throw new Error('Header CSV tidak sesuai (sheet yang dipublish mungkin bukan "Leaderboard")');
   }
@@ -678,7 +691,8 @@ async function loadLeaderboardFromCSV(){
       name: r[iName]||'', code: r[iCode]||'', hasil: (r[iHasil]||'').trim(),
       waktu: iWaktu>-1 ? r[iWaktu] : '0', tanggal: iTanggal>-1 ? r[iTanggal] : '',
       cc2: iCC2>-1 ? r[iCC2] : '', cc3: iCC3>-1 ? r[iCC3] : '',
-      country: iNegara>-1 ? r[iNegara] : '', city: iKota>-1 ? r[iKota] : '', region: iProvinsi>-1 ? r[iProvinsi] : ''
+      country: iNegara>-1 ? r[iNegara] : '', city: iKota>-1 ? r[iKota] : '', region: iProvinsi>-1 ? r[iProvinsi] : '',
+      reveal: iReveal>-1 ? r[iReveal] : ''
     }));
 }
 async function loadLeaderboard(){
@@ -691,7 +705,7 @@ async function loadLeaderboard(){
     const list = apiRes.rows.map(r => ({
       name: r.name || '', code: r.code || '', hasil: (r.result||'').toString().trim(),
       waktu: r.waktu || 0, tanggal: r.tanggal || '', cc2: r.cc2 || '', cc3: r.cc3 || '',
-      country: r.country || '', city: r.city || '', region: r.region || ''
+      country: r.country || '', city: r.city || '', region: r.region || '', reveal: r.reveal || ''
     }));
     renderLeaderboardRows(list);
     note.textContent = "Diperbarui " + new Date().toLocaleTimeString('id-ID');
@@ -964,6 +978,7 @@ async function enterGame(code, name){
 
   state = {
     code: parsed.code,
+    reveal: parsed.reveal,
     maxMistake: parsed.maxMistake,
     hintsLeft: parsed.hints,
     name,
@@ -1441,7 +1456,7 @@ function endGame(result, desc){
 
   const seconds = elapsedSeconds();
   api('finish', {
-    code: state.code, deviceId: DEVICE_ID, name: state.name, result, seconds,
+    code: state.code, deviceId: DEVICE_ID, name: state.name, result, seconds, reveal: state.reveal,
     country: myCountry.country, cc2: myCountry.cc2, cc3: myCountry.cc3,
     city: myCountry.city, region: myCountry.region
   }).then(res=>{
