@@ -113,9 +113,10 @@
   .refresh-btn{background:none;border:1px solid var(--line);border-radius:6px;padding:2px 7px;font-size:11px;color:var(--blue);}
   .sync-note{font-size:10px;color:var(--text-dim);text-align:center;margin-bottom:10px;}
 
-  .fontctrl{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;}
+  .fontctrl{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
   .fontctrl button{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:6px 12px;font-family:'JetBrains Mono',monospace;font-weight:800;}
   .fontctrl .fs-label{font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;}
+  #numpadStyleBtn{font-family:'Inter',sans-serif;font-weight:700;font-size:11px;padding:6px 10px;}
 
   .grid-outer{border:3px solid var(--blue);border-radius:8px;display:grid;grid-template-columns:repeat(9,1fr);aspect-ratio:1/1;background:var(--panel);overflow:hidden;}
   .cell{display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:var(--cell-font);font-weight:600;color:var(--teal);border-right:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;user-select:none;background:var(--panel);}
@@ -135,12 +136,26 @@
   .tool-btn .ic{font-size:18px;line-height:1;}
   .tool-btn.active{background:var(--amber);color:#241a00;border-color:var(--amber);}
 
-  .numpad{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
-  .numbtn{flex:1 1 calc(20% - 8px);min-width:50px;background:var(--blue);color:#fff;border:none;border-radius:12px;padding:9px 0;display:flex;flex-direction:column;align-items:center;gap:1px;}
+  .numpad{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+  .num-row{display:flex;gap:8px;}
+  .num-row.style-wrap{flex-wrap:wrap;}
+  .num-row.style-wrap .numbtn{flex:1 1 calc(20% - 8px);min-width:50px;}
+  .num-row.style-row{flex-wrap:nowrap;}
+  .num-row.style-row .numbtn{flex:1 1 0;min-width:0;padding:8px 0;}
+  .num-row.style-row .nb-num{font-size:calc(var(--cell-font) - 4px);}
+  .num-row.style-row .nb-count{font-size:9.5px;}
+  .num-row.style-row .numslot-empty{flex:1 1 0;min-width:0;visibility:hidden;}
+  .numbtn{background:var(--blue);color:#fff;border:none;border-radius:12px;padding:9px 0;display:flex;flex-direction:column;align-items:center;gap:1px;}
   .numbtn:active{filter:brightness(0.9);}
   .nb-num{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:calc(var(--cell-font) + 2px);}
   .nb-count{font-family:'JetBrains Mono',monospace;font-size:10.5px;opacity:.85;}
-  .numpad .tipbtn{flex-basis:100%;background:var(--amber);color:#241a00;font-family:'Inter',sans-serif;font-weight:800;font-size:15px;padding:13px 0;border-radius:12px;margin-top:2px;}
+  .tipbtn{background:var(--amber);color:#241a00;border:none;font-family:'Inter',sans-serif;font-weight:800;font-size:15px;padding:13px 0;border-radius:12px;}
+
+  .diffrow{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px;}
+  .diffbtn{flex:1 1 calc(33% - 6px);background:#eef1f8;color:var(--text);border:1px solid var(--line);border-radius:9px;padding:8px 4px;font-size:11.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;}
+  .diffbtn span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);font-weight:600;}
+  .diffbtn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .diffbtn.active span{color:#fff;opacity:.85;}
 
   .toast-box{position:fixed;left:0;right:0;bottom:14px;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:120;pointer-events:none;}
   .toast-item{background:#181b27;color:#fff;font-size:12px;padding:8px 14px;border-radius:20px;box-shadow:0 4px 14px rgba(0,0,0,.25);max-width:86%;text-align:center;}
@@ -171,7 +186,7 @@
   <header class="top">
     <div>
       <div class="eyebrow">Duel Angka · Sampai 10 Pemain</div>
-      <div class="brand">SUDOKU 13.16<span>:VAULT</span></div>
+      <div class="brand">SUDOKU 13.58<span>:VAULT</span></div>
     </div>
     <div class="btnrow">
       <button id="themeBtn" class="btn-secondary btn-small" title="Ganti tema warna">🎨</button>
@@ -191,8 +206,21 @@
 
     <div class="card">
       <h2>2 · Buat Kode Kombinasi Baru</h2>
-      <label>Sel dibuka di awal — minimal 17 <span class="sliderval" id="revealShow">40</span></label>
-      <input type="range" id="revealRange" min="17" max="70" value="40">
+
+      <label style="margin-top:0;">Tingkat Kesulitan (sel dibuka di awal)</label>
+      <div class="diffrow" id="diffRow">
+        <button type="button" class="diffbtn active" data-reveal="70">Mudah<span>70</span></button>
+        <button type="button" class="diffbtn" data-reveal="50">Menengah<span>50</span></button>
+        <button type="button" class="diffbtn" data-reveal="30">Sulit<span>30</span></button>
+        <button type="button" class="diffbtn" data-reveal="20">Ahli<span>20</span></button>
+        <button type="button" class="diffbtn" data-reveal="17">Ekstrem<span>17</span></button>
+        <button type="button" class="diffbtn" data-reveal="custom">Kustom<span>?</span></button>
+      </div>
+      <div id="customRevealWrap" style="display:none;">
+        <label>Sel dibuka di awal — minimal 17 <span class="sliderval" id="revealShow">70</span></label>
+        <input type="range" id="revealRange" min="17" max="70" value="70">
+      </div>
+
       <label>Maksimal kesalahan (00–99, 00 = tanpa toleransi) <span class="sliderval" id="mistakeShow">10</span></label>
       <input type="range" id="mistakeRange" min="0" max="99" value="10">
       <label>Jumlah bantuan / tips (00–10) <span class="sliderval" id="hintShow">3</span></label>
@@ -267,6 +295,7 @@
       <button id="fontMinus">A−</button>
       <span class="fs-label" id="fontSizeLabel">20px</span>
       <button id="fontPlus">A+</button>
+      <button id="numpadStyleBtn" class="btn-secondary" title="Ganti gaya tombol angka">🔢 Gaya: Standar</button>
     </div>
 
     <div class="grid-outer" id="grid"></div>
@@ -276,7 +305,10 @@
       <button class="tool-btn" id="eraseBtn"><span class="ic">⌫</span><span>Hapus</span></button>
       <button class="tool-btn" id="pencilBtn"><span class="ic">✏️</span><span id="pencilLabel">Pensil OFF</span></button>
     </div>
-    <div class="numpad" id="numpad"></div>
+    <div class="numpad" id="numpad">
+      <div class="num-row style-wrap" id="numRow"></div>
+      <button type="button" class="tipbtn" id="hintBtn">Gunakan Tips (3)</button>
+    </div>
   </div>
 
 </div>
@@ -787,7 +819,7 @@ buildOtpBoxes();
 let state = null;
 
 /* ============================================================
-   LOBBY: SLIDERS
+   LOBBY: TINGKAT KESULITAN (tombol preset) + SLIDER KUSTOM
    ============================================================ */
 const revealRange = document.getElementById('revealRange');
 const mistakeRange = document.getElementById('mistakeRange');
@@ -795,6 +827,23 @@ const hintRange = document.getElementById('hintRange');
 revealRange.oninput = ()=> document.getElementById('revealShow').textContent = revealRange.value;
 mistakeRange.oninput = ()=> document.getElementById('mistakeShow').textContent = mistakeRange.value;
 hintRange.oninput = ()=> document.getElementById('hintShow').textContent = hintRange.value;
+
+const diffButtons = Array.from(document.querySelectorAll('.diffbtn'));
+const customRevealWrap = document.getElementById('customRevealWrap');
+diffButtons.forEach(btn=>{
+  btn.onclick = ()=>{
+    diffButtons.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const val = btn.dataset.reveal;
+    if(val === 'custom'){
+      customRevealWrap.style.display = 'block';
+    } else {
+      customRevealWrap.style.display = 'none';
+      revealRange.value = val;
+      document.getElementById('revealShow').textContent = val;
+    }
+  };
+});
 
 let generatedCode = null;
 
@@ -968,6 +1017,22 @@ document.getElementById('fontPlus').onclick = ()=>{ cellFontSize = Math.min(34, 
 document.getElementById('fontMinus').onclick = ()=>{ cellFontSize = Math.max(12, cellFontSize-2); applyFontSize(); };
 
 /* ============================================================
+   GAYA TOMBOL ANGKA (numpad):
+   - 'wrap'  = gaya standar sekarang (tombol yang habis otomatis
+               hilang & sisanya rapat, boleh jadi lebih dari 1 baris).
+   - 'row'   = gaya 1 baris tetap seperti gambar referensi: posisi
+               angka 1..9 TIDAK PERNAH berubah tempat; kalau sebuah
+               angka sudah dipakai 9x (habis), posisi itu jadi kosong
+               (bukan digeser / diganti angka lain).
+   ============================================================ */
+let numpadStyle = 'wrap';
+document.getElementById('numpadStyleBtn').onclick = ()=>{
+  numpadStyle = (numpadStyle === 'wrap') ? 'row' : 'wrap';
+  document.getElementById('numpadStyleBtn').textContent = numpadStyle === 'row' ? '🔢 Gaya: 1 Baris' : '🔢 Gaya: Standar';
+  if(state) renderNumpad();
+};
+
+/* ============================================================
    GRID
    ============================================================ */
 function buildGrid(){
@@ -1024,34 +1089,47 @@ function renderCellDisplay(i){
   }
 }
 function renderNumpad(){
-  const pad = document.getElementById('numpad');
+  const numRow = document.getElementById('numRow');
   const perNumber = Array(10).fill(0);
   let totalRemaining = 0;
   for(let i=0;i<81;i++){
     if(!state.locked[i]){ totalRemaining++; perNumber[state.solution[i]]++; }
   }
-  pad.innerHTML = '';
+  numRow.className = 'num-row style-' + numpadStyle;
+  numRow.innerHTML = '';
   for(let n=1;n<=9;n++){
-    if(perNumber[n] === 0) continue; // angka habis -> tombolnya hilang
+    if(perNumber[n] === 0){
+      // Angka sudah habis dipakai 9x.
+      if(numpadStyle === 'row'){
+        // Gaya 1-baris: posisi angka TETAP ada (kosong), tidak digeser.
+        const slot = document.createElement('div');
+        slot.className = 'numslot-empty';
+        numRow.appendChild(slot);
+      }
+      // Gaya standar: tombolnya dilewati saja (hilang & sisanya rapat).
+      continue;
+    }
     const btn = document.createElement('button');
     btn.className = 'numbtn';
     btn.dataset.n = n;
     btn.innerHTML = `<span class="nb-num">${n}</span><span class="nb-count">${perNumber[n]}</span>`;
-    pad.appendChild(btn);
+    numRow.appendChild(btn);
   }
-  const tip = document.createElement('button');
-  tip.type = 'button';
-  tip.className = 'tipbtn';
-  tip.id = 'hintBtn';
-  tip.textContent = `Gunakan Tips (${state.hintsLeft})`;
-  tip.onclick = ()=>{ if(!state.finished) useHint(); };
-  pad.appendChild(tip);
 
+  const hintBtn = document.getElementById('hintBtn');
+  hintBtn.textContent = `Gunakan Tips (${state.hintsLeft})`;
+
+  const pad = document.getElementById('numpad');
+  const toolRow = document.getElementById('toolRow');
   if(totalRemaining === 0){
     pad.style.display = 'none';
-    document.getElementById('toolRow').style.display = 'none';
+    toolRow.style.display = 'none';
+  } else {
+    pad.style.display = '';
   }
 }
+document.getElementById('hintBtn').onclick = ()=>{ if(state && !state.finished) useHint(); };
+
 function clearHighlights(){
   document.querySelectorAll('.cell.samenum').forEach(el=>el.classList.remove('samenum'));
 }
